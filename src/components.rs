@@ -42,6 +42,12 @@ pub struct BlocksTile {}
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct CombatStats {
+    pub str: i32,
+    pub dex: i32,
+    pub con: i32,
+    pub int: i32,
+    pub wis: i32,
+    pub cha: i32,
     pub max_hp: i32,
     pub hp: i32,
     pub defense: i32,

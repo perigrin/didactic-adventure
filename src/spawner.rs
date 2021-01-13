@@ -32,6 +32,12 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             name: "Player".to_string(),
         })
         .with(CombatStats {
+            str: 0,
+            dex: 0,
+            con: 0,
+            int: 0,
+            wis: 0,
+            cha: 0,
             max_hp: 30,
             hp: 30,
             defense: 2,
@@ -133,6 +139,12 @@ fn monster<S: ToString>(ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharTy
         })
         .with(BlocksTile {})
         .with(CombatStats {
+            str: 0,
+            dex: 0,
+            con: 0,
+            int: 0,
+            wis: 0,
+            cha: 0,
             max_hp: 16,
             hp: 16,
             defense: 1,

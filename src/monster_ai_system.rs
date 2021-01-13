@@ -55,6 +55,7 @@ impl<'a> System<'a> for MonsterAI {
                 let distance =
                     rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
                 if distance < 1.5 {
+                    // TODO: should be replaced with botched player rolls
                     wants_to_melee
                         .insert(
                             entity,
