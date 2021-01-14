@@ -50,8 +50,6 @@ pub struct CombatStats {
     pub cha: i32,
     pub max_hp: i32,
     pub hp: i32,
-    pub defense: i32,
-    pub power: i32,
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
@@ -138,7 +136,7 @@ pub struct WantsToRemoveItem {
 #[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub enum EquipmentSlot {
     Melee,
-    Shield,
+    Armor,
 }
 
 #[derive(Component, Serialize, Deserialize, Clone)]
@@ -154,12 +152,12 @@ pub struct Equipped {
 
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct MeleePowerBonus {
-    pub power: i32,
+    pub bonus: i32,
 }
 
 #[derive(Component, ConvertSaveload, Clone)]
-pub struct DefenseBonus {
-    pub defense: i32,
+pub struct ArmorBonus {
+    pub bonus: i32,
 }
 
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an

@@ -1,5 +1,5 @@
 use super::{
-    gamelog::GameLog, CombatStats, DefenseBonus, Equipped, MeleePowerBonus, Name, SufferDamage,
+    gamelog::GameLog, ArmorBonus, CombatStats, Equipped, MeleePowerBonus, Name, SufferDamage,
     WantsToMelee,
 };
 use specs::prelude::*;
@@ -16,7 +16,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
         ReadStorage<'a, CombatStats>,
         WriteStorage<'a, SufferDamage>,
         ReadStorage<'a, MeleePowerBonus>,
-        ReadStorage<'a, DefenseBonus>,
+        ReadStorage<'a, ArmorBonus>,
         ReadStorage<'a, Equipped>,
         WriteExpect<'a, rltk::RandomNumberGenerator>,
     );
@@ -29,9 +29,9 @@ impl<'a> System<'a> for MeleeCombatSystem {
             names,
             combat_stats,
             mut inflict_damage,
-            _melee_power_bonuses,
-            _defense_bonuses,
-            _equipped,
+            melee_power_bonuses,
+            defense_bonuses,
+            equipped,
             mut rng,
         ) = data;
 
@@ -39,14 +39,31 @@ impl<'a> System<'a> for MeleeCombatSystem {
             (&entities, &wants_melee, &names, &combat_stats).join()
         {
             let target_stats = combat_stats.get(wants_melee.target).unwrap();
+            let mut offensive_bonus = 0;
+            for (_item_entity, melee_bonus, equipped_by) in
+                (&entities, &melee_power_bonuses, &equipped).join()
+            {
+                if equipped_by.owner == entity {
+                    offensive_bonus += melee_bonus.bonus;
+                }
+            }
             if stats.hp > 0 && target_stats.hp > 0 {
                 let target_name = names.get(wants_melee.target).unwrap();
                 let dice_roll = rng.roll_dice(2, 6) + stats.str;
+                let mut defensive_bonus = 0;
+                for (_item_entity, defense_bonus, equipped_by) in
+                    (&entities, &defense_bonuses, &equipped).join()
+                {
+                    if equipped_by.owner == wants_melee.target {
+                        defensive_bonus += defense_bonus.bonus;
+                    }
+                }
+
                 match dice_roll {
                     12 => {
                         // critical success
-                        let damage = rng.roll_dice(1, 4); // TODO look at equipment
-                        let damage = damage * 2; // TODO figure out a better boon
+                        let damage = rng.roll_dice(1, 6) + offensive_bonus - defensive_bonus;
+                        let damage = damage + 2; // TODO figure out a better boon
                         log.entries.push(format!(
                             "{} hits {}, for {} hp.",
                             &name.name, &target_name.name, damage
@@ -55,7 +72,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     }
                     10 | 11 => {
                         // normal success
-                        let damage = rng.roll_dice(1, 6); // TODO look at equipment
+                        let damage = rng.roll_dice(1, 6) + offensive_bonus - defensive_bonus;
                         log.entries.push(format!(
                             "{} hits {}, for {} hp.",
                             &name.name, &target_name.name, damage
@@ -64,15 +81,33 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     }
                     7..=9 => {
                         // partial failure ... enemy gets a hit too
-                        let damage = rng.roll_dice(1, 6); // TODO look at equipment
+                        let damage = rng.roll_dice(1, 6) + offensive_bonus - defensive_bonus;
                         log.entries.push(format!(
                             "{} hits {}, for {} hp.",
                             &name.name, &target_name.name, damage
                         ));
                         SufferDamage::new_damage(&mut inflict_damage, wants_melee.target, damage);
 
-                        // enemy's hit
-                        let damage = rng.roll_dice(1, 6); // TODO look at equipment
+                        // enemy's hit - reverse the calculations
+                        let mut offensive_bonus = 0;
+                        for (_item_entity, melee_bonus, equipped_by) in
+                            (&entities, &melee_power_bonuses, &equipped).join()
+                        {
+                            if equipped_by.owner == wants_melee.target {
+                                offensive_bonus += melee_bonus.bonus;
+                            }
+                        }
+
+                        let mut defensive_bonus = 0;
+                        for (_item_entity, defense_bonus, equipped_by) in
+                            (&entities, &defense_bonuses, &equipped).join()
+                        {
+                            if equipped_by.owner == entity {
+                                defensive_bonus += defense_bonus.bonus;
+                            }
+                        }
+
+                        let damage = rng.roll_dice(1, 6) + offensive_bonus - defensive_bonus;
                         log.entries.push(format!(
                             "{} hits {}, for {} hp.",
                             &target_name.name, &name.name, damage
@@ -85,7 +120,27 @@ impl<'a> System<'a> for MeleeCombatSystem {
                             "{} is unable to hurt {}",
                             &name.name, &target_name.name
                         ));
-                        let damage = rng.roll_dice(1, 6); // TODO look at equipment
+
+                        // enemy's hit - reverse the calculations
+                        let mut offensive_bonus = 0;
+                        for (_item_entity, melee_bonus, equipped_by) in
+                            (&entities, &melee_power_bonuses, &equipped).join()
+                        {
+                            if equipped_by.owner == wants_melee.target {
+                                offensive_bonus += melee_bonus.bonus;
+                            }
+                        }
+
+                        let mut defensive_bonus = 0;
+                        for (_item_entity, defense_bonus, equipped_by) in
+                            (&entities, &defense_bonuses, &equipped).join()
+                        {
+                            if equipped_by.owner == entity {
+                                defensive_bonus += defense_bonus.bonus;
+                            }
+                        }
+
+                        let damage = rng.roll_dice(1, 6) + offensive_bonus - defensive_bonus;
                         log.entries.push(format!(
                             "{} hits {}, for {} hp.",
                             &target_name.name, &name.name, damage

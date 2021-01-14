@@ -55,14 +55,9 @@ impl<'a> System<'a> for MonsterAI {
                 let distance =
                     rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
                 if distance < 1.5 {
-                    // TODO: should be replaced with botched player rolls
+                    // TODO: should inject a Defend roll onto the target
                     wants_to_melee
-                        .insert(
-                            entity,
-                            WantsToMelee {
-                                target: *player_entity,
-                            },
-                        )
+                        .insert(*player_entity, WantsToMelee { target: entity })
                         .expect("Unable to insert attack");
                 } else if viewshed.visible_tiles.contains(&*player_pos) {
                     // Path to the player
