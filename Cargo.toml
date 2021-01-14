@@ -1,8 +1,8 @@
 [package]
-name = "rtlk-tutorial"
-version = "0.1.0"
+name = "didactic-adventure"
+version = "0.0.1"
 authors = ["Chris Prather <chris@prather.org>"]
-edition = "2018"
+edition = "2019"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
