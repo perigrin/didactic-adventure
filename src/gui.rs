@@ -503,7 +503,7 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
         15,
         RGB::named(rltk::YELLOW),
         RGB::named(rltk::BLACK),
-        "Rust Roguelike Tutorial",
+        "Didactic Adventure",
     );
 
     if let RunState::MainMenu {

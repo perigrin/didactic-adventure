@@ -469,7 +469,7 @@ fn main() -> rltk::BError {
         menu_selection: gui::MainMenuSelection::NewGame,
     });
     gs.ecs.insert(gamelog::GameLog {
-        entries: vec!["Welcome to Rusty Roguelike".to_string()],
+        entries: vec!["Welcome to Didactic Adventure".to_string()],
     });
 
     rltk::main_loop(context, gs)
