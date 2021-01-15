@@ -27,14 +27,14 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --target ${{ matrix.arch }}
+          args: --release --all-features --target ${{ matrix.arch }}
 
       - name: Run tests
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: test
-          args: --target ${{ matrix.arch }}
+          args: --release --target ${{ matrix.arch }}
 
       - name: Run clippy
         if: matrix.toolchain == 'stable'
@@ -44,82 +44,31 @@ jobs:
           command: clippy
           args: --target ${{ matrix.arch }} -- -D warnings
 
-  windows:
-    name: Windows
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        toolchain:
-          - stable
-        arch:
-          - i686-pc-windows-msvc
-          - x86_64-pc-windows-msvc
-    steps:
-      - uses: actions/checkout@master
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ matrix.toolchain }}
-          target: ${{ matrix.arch }}
-          override: true
-
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: build
-          args: --target ${{ matrix.arch }}
-
-      - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: test
-          args: --target ${{ matrix.arch }}
-
-      - name: Run clippy
+      - name: Security audit
         if: matrix.toolchain == 'stable'
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/audit-check@v1
         with:
           use-cross: true
-          command: clippy
-          args: --target ${{ matrix.arch }} -- -D warnings
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-  macos:
-    name: macOS
-    runs-on: macOS-latest
-    strategy:
-      matrix:
-        toolchain:
-          - stable
-        arch:
-          - x86_64-apple-darwin
-    steps:
-      - uses: actions/checkout@master
-      - uses: actions-rs/toolchain@v1
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          toolchain: ${{ matrix.toolchain }}
-          target: ${{ matrix.arch }}
-          override: true
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: true
 
-      - name: Build
-        uses: actions-rs/cargo@v1
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          use-cross: true
-          command: build
-          args: --target ${{ matrix.arch }}
-
-      - name: Run tests
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: test
-          args: --target ${{ matrix.arch }}
-
-      - name: Run clippy
-        if: matrix.toolchain == 'stable'
-        uses: actions-rs/cargo@v1
-        with:
-          use-cross: true
-          command: clippy
-          args: --target ${{ matrix.arch }} -- -D warnings
-
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./target/release/didactic-adventure
+          asset_name: didactic-adventure.${{ matrix.arch }}
+          asset_content_type: application/binary
