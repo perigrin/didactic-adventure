@@ -7,19 +7,25 @@ on:
 name: Release
 
 jobs:
-  Release:
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: true
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create-release.outputs.upload_url }}
+    steps:
+      - uses: actions/create-release@v1
+        id: create-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: true
+
   linux:
     name: Linux
+    needs: release
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -42,14 +48,14 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --target ${{ matrix.arch }}
+          args: --release --target ${{ matrix.arch }}
 
       - name: Run tests
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: test
-          args: --target ${{ matrix.arch }}
+          args: --release --target ${{ matrix.arch }}
 
       - name: Run clippy
         if: matrix.toolchain == 'stable'
@@ -60,19 +66,20 @@ jobs:
           args: --target ${{ matrix.arch }} -- -D warnings
 
       - name: Upload Release Asset
-          id: upload-release-asset
-          uses: actions/upload-release-asset@v1
-          env:
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          needs: create_release
-          with:
-            upload_url: ${{ needs.create_release.outputs.upload_url }} # grab the release url from the previous job
-            asset_path: ./target/${{ matrix.arch }}/release/didactic-adventure
+            UPLOAD_URL: ${{ toJson(needs.release.outputs) }}
+        with:
+            upload_url: ${{ needs.release.outputs.upload_url }}
+            asset_path: target/${{ matrix.arch }}/release/didactic-adventure
             asset_name: didactic-adventure.${{ matrix.arch }}
             asset_content_type: application/binary
 
   windows:
     name: Windows
+    needs: release
     runs-on: windows-latest
     strategy:
       matrix:
@@ -94,14 +101,14 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --target ${{ matrix.arch }}
+          args: --release --target ${{ matrix.arch }}
 
       - name: Run tests
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: test
-          args: --target ${{ matrix.arch }}
+          args: --release --target ${{ matrix.arch }}
 
       - name: Run clippy
         if: matrix.toolchain == 'stable'
@@ -112,19 +119,20 @@ jobs:
           args: --target ${{ matrix.arch }} -- -D warnings
 
       - name: Upload Release Asset
-          id: upload-release-asset
-          uses: actions/upload-release-asset@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          needs: create_release
-          with:
-            upload_url: ${{ needs.create_release.outputs.upload_url }} # grab the release url from the previous job
-            asset_path: ./target/${{ matrix.arch }}/release/didactic-adventure
-            asset_name: didactic-adventure.${{ matrix.arch }}
-            asset_content_type: application/binary
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPLOAD_URL: ${{ toJson(needs.release.outputs) }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: target/${{ matrix.arch }}/release/didactic-adventure
+          asset_name: didactic-adventure.${{ matrix.arch }}
+          asset_content_type: application/binary
 
   macos:
     name: macOS
+    needs: release
     runs-on: macOS-latest
     strategy:
       matrix:
@@ -145,14 +153,14 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --target ${{ matrix.arch }}
+          args: --release --target ${{ matrix.arch }}
 
       - name: Run tests
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: test
-          args: --target ${{ matrix.arch }}
+          args: --release --target ${{ matrix.arch }}
 
       - name: Run clippy
         if: matrix.toolchain == 'stable'
@@ -163,14 +171,14 @@ jobs:
           args: --target ${{ matrix.arch }} -- -D warnings
 
       - name: Upload Release Asset
-          id: upload-release-asset
-          uses: actions/upload-release-asset@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          needs: create_release
-          with:
-            upload_url: ${{ needs.create_release.outputs.upload_url }} # grab the release url from the previous job
-            asset_path: ./target/${{ matrix.arch }}/release/didactic-adventure
-            asset_name: didactic-adventure.${{ matrix.arch }}
-            asset_content_type: application/binary
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPLOAD_URL: ${{ toJson(needs.release.outputs) }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }} # grab the release url from the previous job
+          asset_path: target/${{ matrix.arch }}/release/didactic-adventure
+          asset_name: didactic-adventure.${{ matrix.arch }}
+          asset_content_type: application/binary
 
