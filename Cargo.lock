@@ -254,6 +254,23 @@ dependencies = [
 ]
 
 [[package]]
+<<<<<<< HEAD
+=======
+name = "chapter-74-darkcity"
+version = "0.1.0"
+dependencies = [
+ "itertools",
+ "lazy_static",
+ "regex",
+ "rltk",
+ "serde",
+ "serde_json",
+ "specs",
+ "specs-derive",
+]
+
+[[package]]
+>>>>>>> f3e4a8a (WIP: get WoD HP to work)
 name = "cloudabi"
 version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -759,6 +776,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b2b3ea6ff95e175473f8ffe6a7eb7c00d054240321b84c57051175fe3c1e075e"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "itertools"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "284f18f85651fe11e8a991b2adb42cb078325c996ed026d994719efcfca1d54b"
+dependencies = [
+ "either",
 ]
 
 [[package]]
