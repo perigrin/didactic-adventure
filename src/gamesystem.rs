@@ -1,7 +1,19 @@
 use super::{Skill, Skills};
 
+pub fn roll_stat() -> i32 {
+    let roll = crate::rng::roll_dice(1, 6);
+    let val = match roll {
+        12 => 3,
+        10 | 11 => 2,
+        7..=9 => 1,
+        _ => 0,
+    };
+
+    val
+}
+
 pub fn attr_bonus(value: i32) -> i32 {
-    (value - 10) / 2 // See: https://roll20.net/compendium/dnd5e/Ability%20Scores#content
+    0
 }
 
 pub fn player_hp_per_level(fitness: i32) -> i32 {

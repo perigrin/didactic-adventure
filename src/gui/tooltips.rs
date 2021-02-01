@@ -93,30 +93,42 @@ pub fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
         let attr = attributes.get(entity);
         if let Some(attr) = attr {
             let mut s = "".to_string();
-            if attr.might.bonus < 0 {
+            if attr.STR.base < 1 {
                 s += "Weak. "
             };
-            if attr.might.bonus > 0 {
+            if attr.STR.base > 2 {
                 s += "Strong. "
             };
-            if attr.quickness.bonus < 0 {
+            if attr.DEX.base < 1 {
                 s += "Clumsy. "
             };
-            if attr.quickness.bonus > 0 {
+            if attr.DEX.base > 2 {
                 s += "Agile. "
             };
-            if attr.fitness.bonus < 0 {
+            if attr.CON.base < 1 {
                 s += "Unheathy. "
             };
-            if attr.fitness.bonus > 0 {
+            if attr.CON.base > 2 {
                 s += "Healthy."
             };
-            if attr.intelligence.bonus < 0 {
+            if attr.INT.base < 1 {
                 s += "Unintelligent. "
             };
-            if attr.intelligence.bonus > 0 {
-                s += "Smart. "
+            if attr.INT.base > 2 {
+                s += "Clever. "
             };
+            if attr.WIS.base < 1 {
+                s += "Ignorant. "
+            };
+            if attr.WIS.base > 2 {
+                s += "Learned. "
+            };
+            if attr.CHA.base < 1 {
+                s += "Disconcerting."
+            }
+            if attr.CHA.base > 2 {
+                s += "Charming."
+            }
             if s.is_empty() {
                 s = "Quite Average".to_string();
             }

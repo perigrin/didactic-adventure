@@ -1,31 +1,29 @@
 use super::{
-    map::MAPWIDTH, random_table::RandomTable, AreaOfEffect, ArmorBonus, BlocksTile, CombatStats,
-    Confusion, Consumable, EquipmentSlot, Equippable, InflictsDamage, Item, MeleePowerBonus,
-    Monster, Name, Player, Position, ProvidesHealing, Ranged, Rect, Renderable, SerializeMe,
-    Viewshed,
+    random_table::MasterTable, raws::*, Attribute, AttributeBonus, Attributes, Duration,
+    EntryTrigger, EquipmentChanged, Faction, HungerClock, HungerState, Initiative, KnownSpells,
+    LightSource, Map, MasterDungeonMap, Name, OtherLevelPosition, Player, Pool, Pools, Position,
+    Rect, Renderable, SerializeMe, SingleActivation, Skill, Skills, StatusEffect, TeleportTo,
+    TileType, Viewshed,
 };
-use rltk::{RandomNumberGenerator, RGB};
+use crate::{mana_at_level, player_hp_at_level, roll_stat};
+use rltk::RGB;
 use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
 use std::collections::HashMap;
 
 /// Spawns the player and returns his/her entity object.
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
-    let stats: CombatStats;
-    {
-        let mut rng = ecs.write_resource::<RandomNumberGenerator>();
-        stats = CombatStats {
-            str: rng.roll_dice(1, 4) - 1,
-            dex: rng.roll_dice(1, 4) - 1,
-            con: rng.roll_dice(1, 4) - 1,
-            int: rng.roll_dice(1, 4) - 1,
-            wis: rng.roll_dice(1, 4) - 1,
-            cha: rng.roll_dice(1, 4) - 1,
-            max_hp: 30, // TODO calculate based on con
-            hp: 30,
-        };
-    }
-    ecs.create_entity()
+    spawn_all_spells(ecs);
+
+    let mut skills = Skills {
+        skills: HashMap::new(),
+    };
+    skills.skills.insert(Skill::Melee, 1);
+    skills.skills.insert(Skill::Defense, 1);
+    skills.skills.insert(Skill::Magic, 1);
+
+    let player = ecs
+        .create_entity()
         .with(Position {
             x: player_x,
             y: player_y,
@@ -45,279 +43,292 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         .with(Name {
             name: "Player".to_string(),
         })
-        .with(stats)
+        .with(HungerClock {
+            state: HungerState::WellFed,
+            duration: 20,
+        })
+        .with(Attributes {
+            STR: Attribute {
+                base: roll_stat(),
+                modifiers: 0,
+                bonus: 0,
+            },
+            DEX: Attribute {
+                base: roll_stat(),
+                modifiers: 0,
+                bonus: 0,
+            },
+            CON: Attribute {
+                base: roll_stat(),
+                modifiers: 0,
+                bonus: 0,
+            },
+            INT: Attribute {
+                base: roll_stat(),
+                modifiers: 0,
+                bonus: 0,
+            },
+            WIS: Attribute {
+                base: roll_stat(),
+                modifiers: 0,
+                bonus: 0,
+            },
+            CHA: Attribute {
+                base: roll_stat(),
+                modifiers: 0,
+                bonus: 0,
+            },
+            might: Attribute {
+                base: 11,
+                modifiers: 0,
+                bonus: 0,
+            },
+            fitness: Attribute {
+                base: 11,
+                modifiers: 0,
+                bonus: 0,
+            },
+            quickness: Attribute {
+                base: 11,
+                modifiers: 0,
+                bonus: 0,
+            },
+            intelligence: Attribute {
+                base: 11,
+                modifiers: 0,
+                bonus: 0,
+            },
+        })
+        .with(skills)
+        .with(Pools {
+            hit_points: Pool {
+                current: player_hp_at_level(11, 1),
+                max: player_hp_at_level(11, 1),
+            },
+            mana: Pool {
+                current: mana_at_level(11, 1),
+                max: mana_at_level(11, 1),
+            },
+            xp: 0,
+            level: 1,
+            total_weight: 0.0,
+            total_initiative_penalty: 0.0,
+            gold: 0.0,
+            god_mode: false,
+        })
+        .with(EquipmentChanged {})
+        .with(LightSource {
+            color: rltk::RGB::from_f32(1.0, 1.0, 0.5),
+            range: 8,
+        })
+        .with(Initiative { current: 0 })
+        .with(Faction {
+            name: "Player".to_string(),
+        })
+        .with(KnownSpells { spells: Vec::new() })
         .marked::<SimpleMarker<SerializeMe>>()
-        .build()
+        .build();
+
+    // Starting equipment
+    spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        "Rusty Longsword",
+        SpawnType::Equipped { by: player },
+    );
+    spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        "Dried Sausage",
+        SpawnType::Carried { by: player },
+    );
+    spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        "Beer",
+        SpawnType::Carried { by: player },
+    );
+    spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        "Stained Tunic",
+        SpawnType::Equipped { by: player },
+    );
+    spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        "Torn Trousers",
+        SpawnType::Equipped { by: player },
+    );
+    spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        "Old Boots",
+        SpawnType::Equipped { by: player },
+    );
+    spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        "Shortbow",
+        SpawnType::Carried { by: player },
+    );
+
+    // Starting hangover
+    ecs.create_entity()
+        .with(StatusEffect { target: player })
+        .with(Duration { turns: 10 })
+        .with(Name {
+            name: "Hangover".to_string(),
+        })
+        .with(AttributeBonus {
+            might: Some(-1),
+            fitness: None,
+            quickness: Some(-1),
+            intelligence: Some(-1),
+        })
+        .marked::<SimpleMarker<SerializeMe>>()
+        .build();
+
+    player
 }
 
 const MAX_MONSTERS: i32 = 4;
 
-fn room_table(map_depth: i32) -> RandomTable {
-    RandomTable::new()
-        .add("Rat", 10 - map_depth)
-        .add("Goblin", 1 + map_depth)
-        .add("Orc", map_depth - 1)
-        .add("Health Potion", 4)
-        .add("Fireball Scroll", 1)
-        .add("Confusion Scroll", 1)
-        .add("Magic Missile Scroll", 3)
-        .add("Dagger", 2)
-        .add("Shield", 2)
-        .add("Claymore", map_depth - 1)
+fn room_table(map_depth: i32) -> MasterTable {
+    get_spawn_table_for_depth(&RAWS.lock().unwrap(), map_depth)
 }
 
 /// Fills a room with stuff!
-#[allow(clippy::map_entry)]
-pub fn spawn_room(ecs: &mut World, room: &Rect, map_depth: i32) {
-    let spawn_table = room_table(map_depth);
-    let mut spawn_points: HashMap<usize, String> = HashMap::new();
-
-    // Scope to keep the borrow checker happy
+pub fn spawn_room(map: &Map, room: &Rect, map_depth: i32, spawn_list: &mut Vec<(usize, String)>) {
+    let mut possible_targets: Vec<usize> = Vec::new();
     {
-        let mut rng = ecs.write_resource::<RandomNumberGenerator>();
-        let num_spawns = rng.roll_dice(1, MAX_MONSTERS + 3) + (map_depth - 1) - 3;
-
-        for _i in 0..num_spawns {
-            let mut added = false;
-            let mut tries = 0;
-            while !added && tries < 20 {
-                let x = (room.x1 + rng.roll_dice(1, i32::abs(room.x2 - room.x1))) as usize;
-                let y = (room.y1 + rng.roll_dice(1, i32::abs(room.y2 - room.y1))) as usize;
-                let idx = (y * MAPWIDTH) + x;
-                if !spawn_points.contains_key(&idx) {
-                    spawn_points.insert(idx, spawn_table.roll(&mut rng));
-                    added = true;
-                } else {
-                    tries += 1;
+        // Borrow scope - to keep access to the map separated
+        for y in room.y1 + 1..room.y2 {
+            for x in room.x1 + 1..room.x2 {
+                let idx = map.xy_idx(x, y);
+                if map.tiles[idx] == TileType::Floor {
+                    possible_targets.push(idx);
                 }
             }
         }
     }
 
+    spawn_region(map, &possible_targets, map_depth, spawn_list);
+}
+
+/// Fills a region with stuff!
+pub fn spawn_region(
+    _map: &Map,
+    area: &[usize],
+    map_depth: i32,
+    spawn_list: &mut Vec<(usize, String)>,
+) {
+    let spawn_table = room_table(map_depth);
+    let mut spawn_points: HashMap<usize, String> = HashMap::new();
+    let mut areas: Vec<usize> = Vec::from(area);
+
+    // Scope to keep the borrow checker happy
+    {
+        let num_spawns = i32::min(
+            areas.len() as i32,
+            crate::rng::roll_dice(1, MAX_MONSTERS + 3) + (map_depth - 1) - 3,
+        );
+        if num_spawns == 0 {
+            return;
+        }
+
+        for _i in 0..num_spawns {
+            let array_index = if areas.len() == 1 {
+                0usize
+            } else {
+                (crate::rng::roll_dice(1, areas.len() as i32) - 1) as usize
+            };
+
+            let map_idx = areas[array_index];
+            spawn_points.insert(map_idx, spawn_table.roll());
+            areas.remove(array_index);
+        }
+    }
+
     // Actually spawn the monsters
     for spawn in spawn_points.iter() {
-        let x = (*spawn.0 % MAPWIDTH) as i32;
-        let y = (*spawn.0 / MAPWIDTH) as i32;
-
-        match spawn.1.as_ref() {
-            "Rat" => rat(ecs, x, y),
-            "Goblin" => goblin(ecs, x, y),
-            "Orc" => orc(ecs, x, y),
-            "Health Potion" => health_potion(ecs, x, y),
-            "Fireball Scroll" => fireball_scroll(ecs, x, y),
-            "Confusion Scroll" => confusion_scroll(ecs, x, y),
-            "Magic Missile Scroll" => magic_missile_scroll(ecs, x, y),
-            "Dagger" => light_weapon(ecs, "Dagger".to_string(), x, y),
-            "Shield" => armor(ecs, "Shield".to_string(), x, y),
-            "Longsword" => martial_weapon(ecs, "Longsword".to_string(), x, y),
-            "Claymore" => great_weapon(ecs, "Claymore".to_string(), x, y),
-            _ => {}
-        }
+        spawn_list.push((*spawn.0, spawn.1.to_string()));
     }
 }
 
-fn orc(ecs: &mut World, x: i32, y: i32) {
-    monster(ecs, x, y, rltk::to_cp437('o'), "Orc", 16);
-}
-fn rat(ecs: &mut World, x: i32, y: i32) {
-    monster(ecs, x, y, rltk::to_cp437('r'), "Rat", 7);
-}
-fn goblin(ecs: &mut World, x: i32, y: i32) {
-    monster(ecs, x, y, rltk::to_cp437('g'), "Goblin", 10);
+/// Spawns a named entity (name in tuple.1) at the location in (tuple.0)
+pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String)) {
+    let map = ecs.fetch::<Map>();
+    let width = map.width as usize;
+    let x = (*spawn.0 % width) as i32;
+    let y = (*spawn.0 / width) as i32;
+    std::mem::drop(map);
+
+    let spawn_result = spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        &spawn.1,
+        SpawnType::AtPosition { x, y },
+    );
+    if spawn_result.is_some() {
+        return;
+    }
+
+    if spawn.1 != "None" {
+        rltk::console::log(format!(
+            "WARNING: We don't know how to spawn [{}]!",
+            spawn.1
+        ));
+    }
 }
 
-fn monster<S: ToString>(
-    ecs: &mut World,
-    x: i32,
-    y: i32,
-    glyph: rltk::FontCharType,
-    name: S,
-    hp: i32,
-) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph,
-            fg: RGB::named(rltk::RED),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 1,
-        })
-        .with(Viewshed {
-            visible_tiles: Vec::new(),
-            range: 8,
-            dirty: true,
-        })
-        .with(Monster {})
-        .with(Name {
-            name: name.to_string(),
-        })
-        .with(BlocksTile {})
-        .with(CombatStats {
-            str: 0,
-            dex: 0,
-            con: 0,
-            int: 0,
-            wis: 0,
-            cha: 0,
-            max_hp: hp,
-            hp,
-        })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
+pub fn spawn_town_portal(ecs: &mut World) {
+    // Get current position & depth
+    let map = ecs.fetch::<Map>();
+    let player_depth = map.depth;
+    let player_pos = ecs.fetch::<rltk::Point>();
+    let player_x = player_pos.x;
+    let player_y = player_pos.y;
+    std::mem::drop(player_pos);
+    std::mem::drop(map);
 
-fn health_potion(ecs: &mut World, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph: rltk::to_cp437('¡'),
-            fg: RGB::named(rltk::MAGENTA),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 2,
-        })
-        .with(Name {
-            name: "Health Potion".to_string(),
-        })
-        .with(Item {})
-        .with(Consumable {})
-        .with(ProvidesHealing { heal_amount: 8 })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
+    // Find part of the town for the portal
+    let dm = ecs.fetch::<MasterDungeonMap>();
+    let town_map = dm.get_map(1).unwrap();
+    let mut stairs_idx = 0;
+    for (idx, tt) in town_map.tiles.iter().enumerate() {
+        if *tt == TileType::DownStairs {
+            stairs_idx = idx;
+        }
+    }
+    let portal_x = (stairs_idx as i32 % town_map.width) - 2;
+    let portal_y = stairs_idx as i32 / town_map.width;
 
-fn magic_missile_scroll(ecs: &mut World, x: i32, y: i32) {
+    std::mem::drop(dm);
+
+    // Spawn the portal itself
     ecs.create_entity()
-        .with(Position { x, y })
+        .with(OtherLevelPosition {
+            x: portal_x,
+            y: portal_y,
+            depth: 1,
+        })
         .with(Renderable {
-            glyph: rltk::to_cp437(')'),
+            glyph: rltk::to_cp437('♥'),
             fg: RGB::named(rltk::CYAN),
             bg: RGB::named(rltk::BLACK),
-            render_order: 2,
+            render_order: 0,
         })
+        .with(EntryTrigger {})
+        .with(TeleportTo {
+            x: player_x,
+            y: player_y,
+            depth: player_depth,
+            player_only: true,
+        })
+        .with(SingleActivation {})
         .with(Name {
-            name: "Magic Missile Scroll".to_string(),
+            name: "Town Portal".to_string(),
         })
-        .with(Item {})
-        .with(Consumable {})
-        .with(Ranged { range: 6 })
-        .with(InflictsDamage { damage: 20 })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
-
-fn fireball_scroll(ecs: &mut World, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph: rltk::to_cp437(')'),
-            fg: RGB::named(rltk::ORANGE),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 2,
-        })
-        .with(Name {
-            name: "Fireball Scroll".to_string(),
-        })
-        .with(Item {})
-        .with(Consumable {})
-        .with(Ranged { range: 6 })
-        .with(InflictsDamage { damage: 20 })
-        .with(AreaOfEffect { radius: 3 })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
-
-fn confusion_scroll(ecs: &mut World, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph: rltk::to_cp437(')'),
-            fg: RGB::named(rltk::PINK),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 2,
-        })
-        .with(Name {
-            name: "Confusion Scroll".to_string(),
-        })
-        .with(Item {})
-        .with(Consumable {})
-        .with(Ranged { range: 6 })
-        .with(Confusion { turns: 4 })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
-
-fn light_weapon(ecs: &mut World, name: std::string::String, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph: rltk::to_cp437('/'),
-            fg: RGB::named(rltk::CYAN),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 2,
-        })
-        .with(Name { name })
-        .with(Item {})
-        .with(Equippable {
-            slot: EquipmentSlot::Melee,
-        })
-        .with(MeleePowerBonus { bonus: 0 })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
-
-fn martial_weapon(ecs: &mut World, name: std::string::String, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph: rltk::to_cp437('/'),
-            fg: RGB::named(rltk::GREEN),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 2,
-        })
-        .with(Name { name })
-        .with(Item {})
-        .with(Equippable {
-            slot: EquipmentSlot::Melee,
-        })
-        .with(MeleePowerBonus { bonus: 1 })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
-
-fn great_weapon(ecs: &mut World, name: std::string::String, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph: rltk::to_cp437('/'),
-            fg: RGB::named(rltk::GREEN),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 2,
-        })
-        .with(Name { name })
-        .with(Item {})
-        .with(Equippable {
-            slot: EquipmentSlot::Melee,
-        })
-        .with(MeleePowerBonus { bonus: 2 })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
-
-fn armor(ecs: &mut World, name: std::string::String, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph: rltk::to_cp437('('),
-            fg: RGB::named(rltk::CYAN),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 2,
-        })
-        .with(Name { name })
-        .with(Item {})
-        .with(Equippable {
-            slot: EquipmentSlot::Armor,
-        })
-        .with(ArmorBonus { bonus: 1 })
-        .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }

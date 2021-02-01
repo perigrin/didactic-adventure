@@ -10,30 +10,16 @@ fn draw_attribute(name: &str, attribute: &Attribute, y: i32, draw_batch: &mut Dr
     let black = RGB::named(rltk::BLACK);
     let attr_gray: RGB = RGB::from_hex("#CCCCCC").expect("Oops");
     draw_batch.print_color(Point::new(50, y), name, ColorPair::new(attr_gray, black));
-    let color: RGB = if attribute.modifiers < 0 {
+    let color: RGB = if attribute.base < 1 {
         RGB::from_f32(1.0, 0.0, 0.0)
-    } else if attribute.modifiers == 0 {
-        RGB::named(rltk::WHITE)
     } else {
         RGB::from_f32(0.0, 1.0, 0.0)
     };
     draw_batch.print_color(
         Point::new(67, y),
-        &format!("{}", attribute.base + attribute.modifiers),
+        &format!("{}", attribute.base),
         ColorPair::new(color, black),
     );
-    draw_batch.print_color(
-        Point::new(73, y),
-        &format!("{}", attribute.bonus),
-        ColorPair::new(color, black),
-    );
-    if attribute.bonus > 0 {
-        draw_batch.set(
-            Point::new(72, y),
-            ColorPair::new(color, black),
-            to_cp437('+'),
-        );
-    }
 }
 
 fn box_framework(draw_batch: &mut DrawBatch) {
@@ -177,7 +163,7 @@ fn initiative_weight(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &En
         &format!(
             "{:.0} lbs ({} lbs max)",
             player_pools.total_weight,
-            (attr.might.base + attr.might.modifiers) * 15
+            attr.might.base * 15
         ),
         ColorPair::new(white, black),
     );
