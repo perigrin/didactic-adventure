@@ -1,4 +1,4 @@
-use crate::{raws::Reaction, Faction, Map, MyTurn, Position, TileSize, WantsToMelee};
+use crate::{raws::Reaction, Faction, GameMove, Map, MyTurn, Position, TileSize, WantsToGameMove};
 use specs::prelude::*;
 
 pub struct AdjacentAI {}
@@ -10,14 +10,15 @@ impl<'a> System<'a> for AdjacentAI {
         ReadStorage<'a, Faction>,
         ReadStorage<'a, Position>,
         ReadExpect<'a, Map>,
-        WriteStorage<'a, WantsToMelee>,
+        WriteStorage<'a, WantsToGameMove>,
         Entities<'a>,
         ReadExpect<'a, Entity>,
         ReadStorage<'a, TileSize>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut turns, factions, positions, map, mut want_melee, entities, player, sizes) = data;
+        let (mut turns, factions, positions, map, mut want_gamemove, entities, player, sizes) =
+            data;
 
         let mut turn_done: Vec<Entity> = Vec::new();
         for (entity, _turn, my_faction, pos) in (&entities, &turns, &factions, &positions).join() {
@@ -114,9 +115,15 @@ impl<'a> System<'a> for AdjacentAI {
                 let mut done = false;
                 for reaction in reactions.iter() {
                     if let Reaction::Attack = reaction.1 {
-                        want_melee
-                            .insert(entity, WantsToMelee { target: reaction.0 })
-                            .expect("Error inserting melee");
+                        want_gamemove
+                            .insert(
+                                reaction.0, // the PC
+                                WantsToGameMove {
+                                    game_move: GameMove::Defend,
+                                    npc: entity,
+                                },
+                            )
+                            .expect("Error inserting defend");
                         done = true;
                     }
                 }

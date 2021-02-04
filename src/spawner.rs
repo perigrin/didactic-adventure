@@ -181,6 +181,12 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             name: "Hangover".to_string(),
         })
         .with(AttributeBonus {
+            STR: Some(-1),
+            DEX: Some(-1),
+            CON: None,
+            INT: Some(-1),
+            WIS: None,
+            CHA: Some(-1),
             might: Some(-1),
             fitness: None,
             quickness: Some(-1),

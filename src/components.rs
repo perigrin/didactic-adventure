@@ -1,4 +1,4 @@
-use rltk::{Point, RGB};
+use rltk::{DiceType, Point, RGB};
 use serde::{Deserialize, Serialize};
 use specs::error::NoError;
 use specs::prelude::*;
@@ -177,7 +177,7 @@ pub struct Pools {
     pub god_mode: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Copy, Debug, Serialize, Deserialize, Clone)]
 pub struct Attribute {
     pub base: i32,
     pub modifiers: i32,
@@ -208,6 +208,28 @@ pub enum Skill {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Skills {
     pub skills: HashMap<Skill, i32>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]
+pub enum GameMove {
+    //  AidOrInterfear, // We dont' currently have bonds  so no clue what this will do
+    Defend,                   // Defend against an attack
+    DefyDanger,               // Catchall
+    DiscernReality,           // Clousely study a situation or person
+    HackAndSlash,             // Melee Attack
+    LastBreath,               // Death may spare you at a cost
+    MakeCamp,                 // we all need to rest longer than normal
+    Parley,                   // Influence an NPC
+    SpoutLore,                // Consult your accumulated knowledge about something
+    Supply,                   // extra special equipment from vendors
+    UndertakePerilousJourney, // random levels between locations
+    Volly,                    // Ranged attack
+}
+
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct WantsToGameMove {
+    pub game_move: GameMove,
+    pub npc: Entity,
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
@@ -254,6 +276,12 @@ pub struct MagicItem {
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct AttributeBonus {
+    pub STR: Option<i32>,
+    pub DEX: Option<i32>,
+    pub CON: Option<i32>,
+    pub INT: Option<i32>,
+    pub WIS: Option<i32>,
+    pub CHA: Option<i32>,
     pub might: Option<i32>,
     pub fitness: Option<i32>,
     pub quickness: Option<i32>,
@@ -407,6 +435,16 @@ pub struct Weapon {
     pub hit_bonus: i32,
     pub proc_chance: Option<f32>,
     pub proc_target: Option<String>,
+}
+
+impl Weapon {
+    fn dice(&mut self) -> DiceType {
+        DiceType {
+            n_dice: self.damage_n_dice,
+            die_type: self.damage_die_type,
+            bonus: self.damage_bonus,
+        }
+    }
 }
 
 #[derive(Component, Serialize, Deserialize, Clone)]

@@ -16,6 +16,8 @@ mod melee_combat_system;
 use melee_combat_system::MeleeCombatSystem;
 mod ranged_combat_system;
 use ranged_combat_system::RangedCombatSystem;
+mod gamemove_system;
+use gamemove_system::GameMoveSystem;
 mod inventory_system;
 use inventory_system::*;
 mod hunger_system;

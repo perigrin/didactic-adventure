@@ -1,5 +1,6 @@
-use super::{Skill, Skills};
+use super::{Attribute, Skill, Skills};
 use itertools::Itertools;
+use rltk::prelude::DiceType;
 
 pub fn roll_stat() -> i32 {
     let roll = crate::rng::roll_dice(1, 6);
@@ -44,4 +45,14 @@ pub fn skill_bonus(skill: Skill, skills: &Skills) -> i32 {
     } else {
         -4
     }
+}
+
+pub fn roll_plus_stat(stat: Attribute) -> i32 {
+    let roll = crate::rng::roll(DiceType {
+        n_dice: 2,
+        die_type: 6,
+        bonus: stat.base,
+    });
+
+    roll
 }

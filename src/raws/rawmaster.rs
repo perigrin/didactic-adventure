@@ -617,6 +617,12 @@ pub fn spawn_named_item(
 
         if let Some(ab) = &item_template.attributes {
             eb = eb.with(AttributeBonus {
+                STR: ab.STR,
+                DEX: ab.DEX,
+                CON: ab.CON,
+                INT: ab.INT,
+                WIS: ab.WIS,
+                CHA: ab.CHA,
                 might: ab.might,
                 fitness: ab.fitness,
                 quickness: ab.quickness,
