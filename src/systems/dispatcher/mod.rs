@@ -34,7 +34,6 @@ construct_dispatcher!(
     (DefaultMoveAI, "default_move", &[]),
     (MovementSystem, "movement", &[]),
     (TriggerSystem, "triggers", &[]),
-    (MeleeCombatSystem, "melee", &[]),
     (RangedCombatSystem, "ranged", &[]),
     (GameMoveSystem, "gamemove", &[]),
     (ItemCollectionSystem, "pickup", &[]),

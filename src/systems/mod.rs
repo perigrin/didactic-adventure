@@ -12,8 +12,6 @@ mod movement_system;
 use movement_system::MovementSystem;
 mod trigger_system;
 use trigger_system::TriggerSystem;
-mod melee_combat_system;
-use melee_combat_system::MeleeCombatSystem;
 mod ranged_combat_system;
 use ranged_combat_system::RangedCombatSystem;
 mod gamemove_system;

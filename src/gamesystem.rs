@@ -2,16 +2,43 @@ use super::{Attribute, Skill, Skills};
 use itertools::Itertools;
 use rltk::prelude::DiceType;
 
-pub fn roll_stat() -> i32 {
-    let roll = crate::rng::roll_dice(1, 6);
-    let val = match roll {
-        12 => 3,
-        10 | 11 => 2,
-        7..=9 => 1,
-        _ => 0,
-    };
+pub enum Success {
+    Critical,
+    Full,
+    Partial,
+    Miss,
+}
 
-    val
+pub fn roll_success(dice: DiceType) -> Success {
+    let roll = crate::rng::roll(dice);
+    match roll {
+        12 => Success::Critical,
+        10 | 11 => Success::Full,
+        7..=9 => Success::Partial,
+        _ => Success::Miss,
+    }
+}
+
+pub fn roll_plus_stat(stat: Attribute) -> Success {
+    roll_success(DiceType {
+        n_dice: 2,
+        die_type: 6,
+        bonus: stat.base,
+    })
+}
+
+pub fn roll_stat() -> i32 {
+    let roll = roll_success(DiceType {
+        n_dice: 1,
+        die_type: 6,
+        bonus: 0,
+    });
+    match roll {
+        Success::Critical => 3,
+        Success::Full => 2,
+        Success::Partial => 1,
+        Success::Miss => 0,
+    }
 }
 
 pub fn player_hp_at_level(con: i32, level: i32) -> i32 {
@@ -45,14 +72,4 @@ pub fn skill_bonus(skill: Skill, skills: &Skills) -> i32 {
     } else {
         -4
     }
-}
-
-pub fn roll_plus_stat(stat: Attribute) -> i32 {
-    let roll = crate::rng::roll(DiceType {
-        n_dice: 2,
-        die_type: 6,
-        bonus: stat.base,
-    });
-
-    roll
 }

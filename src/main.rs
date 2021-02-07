@@ -650,7 +650,6 @@ fn main() -> rltk::BError {
     gs.ecs.register::<WantsToCastSpell>();
     gs.ecs.register::<WantsToDropItem>();
     gs.ecs.register::<WantsToFlee>();
-    gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<WantsToGameMove>();
     gs.ecs.register::<WantsToPickupItem>();
     gs.ecs.register::<WantsToRemoveItem>();

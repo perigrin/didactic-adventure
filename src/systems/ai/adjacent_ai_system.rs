@@ -119,7 +119,7 @@ impl<'a> System<'a> for AdjacentAI {
                             .insert(
                                 reaction.0, // the PC
                                 WantsToGameMove {
-                                    game_move: GameMove::Defend,
+                                    kind: GameMove::Defend,
                                     npc: entity,
                                 },
                             )

@@ -1,4 +1,4 @@
-use rltk::{DiceType, Point, RGB};
+use rltk::{Point, RGB};
 use serde::{Deserialize, Serialize};
 use specs::error::NoError;
 use specs::prelude::*;
@@ -228,13 +228,8 @@ pub enum GameMove {
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct WantsToGameMove {
-    pub game_move: GameMove,
+    pub kind: GameMove,
     pub npc: Entity,
-}
-
-#[derive(Component, Debug, ConvertSaveload, Clone)]
-pub struct WantsToMelee {
-    pub target: Entity,
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
@@ -435,16 +430,6 @@ pub struct Weapon {
     pub hit_bonus: i32,
     pub proc_chance: Option<f32>,
     pub proc_target: Option<String>,
-}
-
-impl Weapon {
-    fn dice(&mut self) -> DiceType {
-        DiceType {
-            n_dice: self.damage_n_dice,
-            die_type: self.damage_die_type,
-            bonus: self.damage_bonus,
-        }
-    }
 }
 
 #[derive(Component, Serialize, Deserialize, Clone)]
