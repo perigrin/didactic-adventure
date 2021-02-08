@@ -186,12 +186,12 @@ pub struct Attribute {
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Attributes {
-    pub STR: Attribute,
-    pub DEX: Attribute,
-    pub CON: Attribute,
-    pub INT: Attribute,
-    pub WIS: Attribute,
-    pub CHA: Attribute,
+    pub str: Attribute,
+    pub dex: Attribute,
+    pub con: Attribute,
+    pub int: Attribute,
+    pub wis: Attribute,
+    pub cha: Attribute,
     pub might: Attribute,
     pub fitness: Attribute,
     pub quickness: Attribute,
@@ -271,12 +271,12 @@ pub struct MagicItem {
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct AttributeBonus {
-    pub STR: Option<i32>,
-    pub DEX: Option<i32>,
-    pub CON: Option<i32>,
-    pub INT: Option<i32>,
-    pub WIS: Option<i32>,
-    pub CHA: Option<i32>,
+    pub str: Option<i32>,
+    pub dex: Option<i32>,
+    pub con: Option<i32>,
+    pub int: Option<i32>,
+    pub wis: Option<i32>,
+    pub cha: Option<i32>,
     pub might: Option<i32>,
     pub fitness: Option<i32>,
     pub quickness: Option<i32>,

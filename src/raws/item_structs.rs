@@ -59,12 +59,12 @@ pub struct MagicItem {
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct ItemAttributeBonus {
-    pub STR: Option<i32>,
-    pub DEX: Option<i32>,
-    pub CON: Option<i32>,
-    pub INT: Option<i32>,
-    pub WIS: Option<i32>,
-    pub CHA: Option<i32>,
+    pub str: Option<i32>,
+    pub dex: Option<i32>,
+    pub con: Option<i32>,
+    pub int: Option<i32>,
+    pub wis: Option<i32>,
+    pub cha: Option<i32>,
     pub might: Option<i32>,
     pub fitness: Option<i32>,
     pub quickness: Option<i32>,

@@ -48,32 +48,32 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             duration: 20,
         })
         .with(Attributes {
-            STR: Attribute {
+            str: Attribute {
                 base: roll_stat(),
                 modifiers: 0,
                 bonus: 0,
             },
-            DEX: Attribute {
+            dex: Attribute {
                 base: roll_stat(),
                 modifiers: 0,
                 bonus: 0,
             },
-            CON: Attribute {
+            con: Attribute {
                 base: roll_stat(),
                 modifiers: 0,
                 bonus: 0,
             },
-            INT: Attribute {
+            int: Attribute {
                 base: roll_stat(),
                 modifiers: 0,
                 bonus: 0,
             },
-            WIS: Attribute {
+            wis: Attribute {
                 base: roll_stat(),
                 modifiers: 0,
                 bonus: 0,
             },
-            CHA: Attribute {
+            cha: Attribute {
                 base: roll_stat(),
                 modifiers: 0,
                 bonus: 0,
@@ -181,12 +181,12 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             name: "Hangover".to_string(),
         })
         .with(AttributeBonus {
-            STR: Some(-1),
-            DEX: Some(-1),
-            CON: None,
-            INT: Some(-1),
-            WIS: None,
-            CHA: Some(-1),
+            str: Some(-1),
+            dex: Some(-1),
+            con: None,
+            int: Some(-1),
+            wis: None,
+            cha: Some(-1),
             might: Some(-1),
             fitness: None,
             quickness: Some(-1),

@@ -40,7 +40,7 @@ struct Character<'a> {
     entity: Entity,
     name: String,
     attributes: Attributes,
-    skills: Option<&'a Skills>,
+    //skills: Option<&'a Skills>,
     pools: &'a Pools,
     weapon: Box<dyn AttackDice>,
 }
@@ -81,7 +81,7 @@ impl<'a> Character<'a> {
     }
 }
 
-fn defend(gamemove: &WantsToGameMove, pc: Character, npc: Character) {
+fn defend(pc: Character, npc: Character) {
     rltk::console::log(format!(
         "{}({:?}) defends against {}({:?})",
         pc.name, pc.entity, npc.name, npc.entity
@@ -92,7 +92,7 @@ fn defend(gamemove: &WantsToGameMove, pc: Character, npc: Character) {
     };
 
     // roll+CON
-    match crate::roll_plus_stat(pc.attributes.CON) {
+    match crate::roll_plus_stat(pc.attributes.con) {
         Success::Critical => {
             let log = Logger::new()
                 .npc_name(&pc.name)
@@ -124,7 +124,7 @@ fn defend(gamemove: &WantsToGameMove, pc: Character, npc: Character) {
     }
 }
 
-fn hack_and_slash(gamemove: &WantsToGameMove, pc: Character, npc: Character) {
+fn hack_and_slash(pc: Character, npc: Character) {
     rltk::console::log(format!(
         "{}({:?}) hack_and_slash vs {}({:?})",
         pc.name, pc.entity, npc.name, npc.entity
@@ -133,7 +133,7 @@ fn hack_and_slash(gamemove: &WantsToGameMove, pc: Character, npc: Character) {
         return; // can't hack and slash if you're dead
     }
 
-    let success = crate::roll_plus_stat(pc.attributes.STR); // roll+STR
+    let success = crate::roll_plus_stat(pc.attributes.str); // roll+STR
     match success {
         Success::Critical => pc.deal_damage(&npc, 2.0, Logger::new()), // PC hits NPC for 2x
         Success::Full => pc.deal_damage(&npc, 1.0, Logger::new()), // PC hits NPC for regular damage
@@ -159,7 +159,7 @@ fn hack_and_slash(gamemove: &WantsToGameMove, pc: Character, npc: Character) {
 }
 
 // TODO replace effects with non-melee effects
-fn volly(gamemove: &WantsToGameMove, pc: Character, npc: Character) {
+fn volly(pc: Character, npc: Character) {
     rltk::console::log(format!(
         "{}({:?}) volly vs {}({:?})",
         pc.name, pc.entity, npc.name, npc.entity
@@ -168,7 +168,7 @@ fn volly(gamemove: &WantsToGameMove, pc: Character, npc: Character) {
         return; // can't hack and slash if you're dead
     }
 
-    let success = crate::roll_plus_stat(pc.attributes.STR); // roll+STR
+    let success = crate::roll_plus_stat(pc.attributes.dex); // roll+DEX
     match success {
         Success::Critical => pc.deal_damage(&npc, 2.0, Logger::new()), // PC hits NPC for 2x
         Success::Full => pc.deal_damage(&npc, 1.0, Logger::new()), // PC hits NPC for regular damage
@@ -215,8 +215,8 @@ impl<'a> System<'a> for GameMoveSystem {
             wants_move,
             names,
             attributes,
-            skills,
-            hunger_clock,
+            _skills,
+            _hunger_clock,
             pools,
             equipped_items,
             weapon,
@@ -279,7 +279,7 @@ impl<'a> System<'a> for GameMoveSystem {
                             Some(attributes) => attributes.clone(),
                             None => panic!(format!("no attributes for {:?}", entity)),
                         },
-                        skills: skills.get(entity),
+                        //skills: skills.get(entity),
                         pools: pool,
                         weapon: find_weapon(&entity, slot),
                     });
@@ -293,7 +293,7 @@ impl<'a> System<'a> for GameMoveSystem {
                 GameMove::Defend => {
                     if let Some(pc) = new_character(entity, EquipmentSlot::Melee) {
                         if let Some(npc) = new_character(gamemove.npc, EquipmentSlot::Melee) {
-                            defend(gamemove, pc, npc);
+                            defend(pc, npc);
                         }
                     }
                 }
@@ -302,7 +302,7 @@ impl<'a> System<'a> for GameMoveSystem {
                 GameMove::HackAndSlash => {
                     if let Some(pc) = new_character(entity, EquipmentSlot::Melee) {
                         if let Some(npc) = new_character(gamemove.npc, EquipmentSlot::Melee) {
-                            hack_and_slash(gamemove, pc, npc);
+                            hack_and_slash(pc, npc);
                         }
                     }
                 }
@@ -315,7 +315,7 @@ impl<'a> System<'a> for GameMoveSystem {
                 GameMove::Volly => {
                     if let Some(pc) = new_character(entity, EquipmentSlot::Melee) {
                         if let Some(npc) = new_character(gamemove.npc, EquipmentSlot::Melee) {
-                            volly(gamemove, pc, npc);
+                            volly(pc, npc);
                         }
                     }
                 }

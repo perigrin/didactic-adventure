@@ -617,12 +617,12 @@ pub fn spawn_named_item(
 
         if let Some(ab) = &item_template.attributes {
             eb = eb.with(AttributeBonus {
-                STR: ab.STR,
-                DEX: ab.DEX,
-                CON: ab.CON,
-                INT: ab.INT,
-                WIS: ab.WIS,
-                CHA: ab.CHA,
+                str: ab.str,
+                dex: ab.dex,
+                con: ab.con,
+                int: ab.int,
+                wis: ab.wis,
+                cha: ab.cha,
                 might: ab.might,
                 fitness: ab.fitness,
                 quickness: ab.quickness,
@@ -699,32 +699,32 @@ pub fn spawn_named_mob(
         let mut mob_fitness = 11;
         let mut mob_int = 11;
         let mut attr = Attributes {
-            STR: Attribute {
+            str: Attribute {
                 base: roll_stat(),
                 modifiers: 0,
                 bonus: 0,
             },
-            DEX: Attribute {
+            dex: Attribute {
                 base: roll_stat(),
                 modifiers: 0,
                 bonus: 0,
             },
-            CON: Attribute {
+            con: Attribute {
                 base: roll_stat(),
                 modifiers: 0,
                 bonus: 0,
             },
-            INT: Attribute {
+            int: Attribute {
                 base: roll_stat(),
                 modifiers: 0,
                 bonus: 0,
             },
-            WIS: Attribute {
+            wis: Attribute {
                 base: roll_stat(),
                 modifiers: 0,
                 bonus: 0,
             },
-            CHA: Attribute {
+            cha: Attribute {
                 base: roll_stat(),
                 modifiers: 0,
                 bonus: 0,
@@ -750,46 +750,46 @@ pub fn spawn_named_mob(
                 bonus: 0,
             },
         };
-        if let Some(STR) = mob_template.attributes.STR {
+        if let Some(str) = mob_template.attributes.str {
             attr.might = Attribute {
-                base: STR,
+                base: str,
                 modifiers: 0,
                 bonus: 0,
             };
         }
-        if let Some(DEX) = mob_template.attributes.DEX {
-            attr.DEX = Attribute {
-                base: DEX,
+        if let Some(dex) = mob_template.attributes.dex {
+            attr.dex = Attribute {
+                base: dex,
                 modifiers: 0,
                 bonus: 0,
             };
         }
-        if let Some(CON) = mob_template.attributes.CON {
-            attr.CON = Attribute {
-                base: CON,
+        if let Some(con) = mob_template.attributes.con {
+            attr.con = Attribute {
+                base: con,
                 modifiers: 0,
                 bonus: 0,
             };
-            mob_fitness = CON;
+            mob_fitness = con;
         }
-        if let Some(INT) = mob_template.attributes.INT {
-            attr.INT = Attribute {
-                base: INT,
+        if let Some(int) = mob_template.attributes.int {
+            attr.int = Attribute {
+                base: int,
                 modifiers: 0,
                 bonus: 0,
             };
-            mob_int = INT;
+            mob_int = int;
         }
-        if let Some(WIS) = mob_template.attributes.WIS {
-            attr.WIS = Attribute {
-                base: WIS,
+        if let Some(wis) = mob_template.attributes.wis {
+            attr.wis = Attribute {
+                base: wis,
                 modifiers: 0,
                 bonus: 0,
             };
         }
-        if let Some(CHA) = mob_template.attributes.CHA {
-            attr.CHA = Attribute {
-                base: CHA,
+        if let Some(cha) = mob_template.attributes.cha {
+            attr.cha = Attribute {
+                base: cha,
                 modifiers: 0,
                 bonus: 0,
             };
