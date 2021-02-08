@@ -1,5 +1,7 @@
 # didactic-adventure
 
+![Continuous integration](https://github.com/perigrin/didactic-adventure/workflows/Continuous%20integration/badge.svg)
+
 *This game is pre-alpha, it's really just the `rltk-tutorial` with very minor
 changes.*
 
