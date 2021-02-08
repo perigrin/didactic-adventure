@@ -2,7 +2,7 @@ use super::{
     raws::Reaction, Attributes, BlocksTile, BlocksVisibility, Door, EntityMoved, Equipped, Faction,
     GameMove, HungerClock, HungerState, Item, Map, Name, Player, Pools, Position, Renderable,
     RunState, State, Target, TileType, Vendor, VendorMode, Viewshed, WantsToCastSpell,
-    WantsToGameMove, WantsToPickupItem, WantsToShoot, Weapon,
+    WantsToGameMove, WantsToPickupItem, Weapon,
 };
 use rltk::{Point, Rltk, VirtualKeyCode};
 use specs::prelude::*;
@@ -66,19 +66,25 @@ fn fire_on_target(ecs: &mut World) -> RunState {
         current_target = Some(e);
     }
 
-    if let Some(target) = current_target {
+    if let Some(npc) = current_target {
         let player_entity = ecs.fetch::<Entity>();
-        let mut shoot_store = ecs.write_storage::<WantsToShoot>();
+        let mut move_store = ecs.write_storage::<WantsToGameMove>();
         let names = ecs.read_storage::<Name>();
-        if let Some(name) = names.get(target) {
+        if let Some(name) = names.get(npc) {
             crate::gamelog::Logger::new()
                 .append("You fire at")
                 .color(rltk::CYAN)
                 .append(&name.name)
                 .log();
         }
-        shoot_store
-            .insert(*player_entity, WantsToShoot { target })
+        move_store
+            .insert(
+                *player_entity,
+                WantsToGameMove {
+                    kind: GameMove::Volly,
+                    npc,
+                },
+            )
             .expect("Insert Fail");
 
         RunState::Ticking

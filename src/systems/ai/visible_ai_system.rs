@@ -1,6 +1,7 @@
 use crate::{
-    raws::Reaction, Chasing, Equipped, Faction, Map, MyTurn, Name, Position, SpecialAbilities,
-    SpellTemplate, Viewshed, WantsToApproach, WantsToCastSpell, WantsToFlee, WantsToShoot, Weapon,
+    raws::Reaction, Chasing, Equipped, Faction, GameMove, Map, MyTurn, Name, Position,
+    SpecialAbilities, SpellTemplate, Viewshed, WantsToApproach, WantsToCastSpell, WantsToFlee,
+    WantsToGameMove, Weapon,
 };
 use specs::prelude::*;
 
@@ -25,7 +26,7 @@ impl<'a> System<'a> for VisibleAI {
         ReadStorage<'a, SpellTemplate>,
         ReadStorage<'a, Equipped>,
         ReadStorage<'a, Weapon>,
-        WriteStorage<'a, WantsToShoot>,
+        WriteStorage<'a, WantsToGameMove>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -46,7 +47,7 @@ impl<'a> System<'a> for VisibleAI {
             spells,
             equipped,
             weapons,
-            mut wants_shoot,
+            mut wants_gamemove,
         ) = data;
 
         for (entity, _turn, my_faction, pos, viewshed) in
@@ -112,10 +113,13 @@ impl<'a> System<'a> for VisibleAI {
                                             //rltk::console::log(format!("Owner found. Ranges: {}/{}", wrange, range));
                                             if wrange >= range as i32 {
                                                 //rltk::console::log("Inserting shoot");
-                                                wants_shoot
+                                                wants_gamemove
                                                     .insert(
-                                                        entity,
-                                                        WantsToShoot { target: reaction.2 },
+                                                        reaction.2,
+                                                        WantsToGameMove {
+                                                            kind: GameMove::Defend,
+                                                            npc: entity,
+                                                        },
                                                     )
                                                     .expect("Insert fail");
                                                 done = true;

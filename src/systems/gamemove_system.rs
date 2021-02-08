@@ -38,23 +38,30 @@ impl AttackDice for NaturalAttack {
 
 struct Character<'a> {
     entity: Entity,
-    name: Option<&'a Name>,
-    attributes: Option<&'a Attributes>,
+    name: String,
+    attributes: Attributes,
     skills: Option<&'a Skills>,
-    pools: Option<&'a Pools>,
+    pools: &'a Pools,
     weapon: Box<dyn AttackDice>,
 }
 
 impl<'a> Character<'a> {
     fn is_alive(&self) -> bool {
-        if self.pools.unwrap().hit_points.current < 1 {
-            return false; // c dead
+        if self.pools.hit_points.current < 1 {
+            return false; // we dead jim
         };
         true
     }
+
     fn deal_damage(&self, to: &Character, modifier: f32, logger: Logger) {
         let weapon = &self.weapon;
         let damage = weapon.damage();
+
+        rltk::console::log(format!(
+            "So {}({:?}) is dealing damage {} to {}({:?})",
+            self.name, self.entity, damage, to.name, to.entity
+        ));
+
         add_effect(
             Some(self.entity),
             EffectType::Damage {
@@ -62,10 +69,11 @@ impl<'a> Character<'a> {
             },
             Targets::Single { target: to.entity },
         );
+
         logger
-            .npc_name(&self.name.unwrap().name)
+            .npc_name(&self.name)
             .append("hits")
-            .npc_name(&to.name.unwrap().name)
+            .npc_name(&to.name)
             .append("for")
             .damage(damage)
             .append("hp.")
@@ -74,17 +82,22 @@ impl<'a> Character<'a> {
 }
 
 fn defend(gamemove: &WantsToGameMove, pc: Character, npc: Character) {
+    rltk::console::log(format!(
+        "{}({:?}) defends against {}({:?})",
+        pc.name, pc.entity, npc.name, npc.entity
+    ));
+
     if !pc.is_alive() || !npc.is_alive() {
         return; // can't defend if you're dead
     };
 
-    let success = crate::roll_plus_stat(pc.attributes.unwrap().CON); // roll+CON
-    match success {
+    // roll+CON
+    match crate::roll_plus_stat(pc.attributes.CON) {
         Success::Critical => {
             let log = Logger::new()
-                .npc_name(&pc.name.unwrap().name)
+                .npc_name(&pc.name)
                 .append("dodges")
-                .npc_name(&npc.name.unwrap().name)
+                .npc_name(&npc.name)
                 .append("and");
 
             pc.deal_damage(&npc, 1.0, log);
@@ -92,17 +105,17 @@ fn defend(gamemove: &WantsToGameMove, pc: Character, npc: Character) {
         Success::Full => {
             // PC avoids NPC
             Logger::new()
-                .npc_name(&pc.name.unwrap().name)
+                .npc_name(&pc.name)
                 .append("dodges")
-                .npc_name(&npc.name.unwrap().name)
+                .npc_name(&npc.name)
                 .log();
         }
         Success::Partial => {
             // PC "mostly" avoids NPC, takes half damage
             let log = Logger::new()
-                .npc_name(&pc.name.unwrap().name)
+                .npc_name(&pc.name)
                 .append("almost dodges")
-                .npc_name(&npc.name.unwrap().name)
+                .npc_name(&npc.name)
                 .append("and");
 
             pc.deal_damage(&npc, 0.5, log)
@@ -112,29 +125,67 @@ fn defend(gamemove: &WantsToGameMove, pc: Character, npc: Character) {
 }
 
 fn hack_and_slash(gamemove: &WantsToGameMove, pc: Character, npc: Character) {
+    rltk::console::log(format!(
+        "{}({:?}) hack_and_slash vs {}({:?})",
+        pc.name, pc.entity, npc.name, npc.entity
+    ));
     if !pc.is_alive() || !npc.is_alive() {
         return; // can't hack and slash if you're dead
     }
 
-    let success = crate::roll_plus_stat(pc.attributes.unwrap().STR); // roll+STR
+    let success = crate::roll_plus_stat(pc.attributes.STR); // roll+STR
     match success {
         Success::Critical => pc.deal_damage(&npc, 2.0, Logger::new()), // PC hits NPC for 2x
         Success::Full => pc.deal_damage(&npc, 1.0, Logger::new()), // PC hits NPC for regular damage
-
         Success::Partial => {
             // PC hits NPC for damage but gets hit in return
             pc.deal_damage(&npc, 1.0, Logger::new());
 
             let log = Logger::new()
                 .append("But")
-                .npc_name(&npc.name.unwrap().name)
+                .npc_name(&npc.name)
                 .append("manages a return strike; ");
             npc.deal_damage(&pc, 1.0, log);
         }
         Success::Miss => {
             // PC misses entirely and NPC gets a hit
             let log = Logger::new()
-                .npc_name(&pc.name.unwrap().name)
+                .npc_name(&pc.name)
+                .append("misses entirely and");
+
+            npc.deal_damage(&pc, 1.0, log);
+        }
+    }
+}
+
+// TODO replace effects with non-melee effects
+fn volly(gamemove: &WantsToGameMove, pc: Character, npc: Character) {
+    rltk::console::log(format!(
+        "{}({:?}) volly vs {}({:?})",
+        pc.name, pc.entity, npc.name, npc.entity
+    ));
+    if !pc.is_alive() || !npc.is_alive() {
+        return; // can't hack and slash if you're dead
+    }
+
+    let success = crate::roll_plus_stat(pc.attributes.STR); // roll+STR
+    match success {
+        Success::Critical => pc.deal_damage(&npc, 2.0, Logger::new()), // PC hits NPC for 2x
+        Success::Full => pc.deal_damage(&npc, 1.0, Logger::new()), // PC hits NPC for regular damage
+        Success::Partial => {
+            // PC hits NPC for damage but gets hit in return
+            pc.deal_damage(&npc, 1.0, Logger::new());
+
+            let log = Logger::new()
+                .append("But")
+                .npc_name(&npc.name)
+                .append("manages a return strike; ");
+            npc.deal_damage(&pc, 1.0, log);
+        }
+        Success::Miss => {
+            // PC misses entirely and NPC gets a hit
+            let log = Logger::new()
+                .npc_name(&pc.name)
                 .append("misses entirely and");
 
             npc.deal_damage(&pc, 1.0, log);
@@ -174,7 +225,7 @@ impl<'a> System<'a> for GameMoveSystem {
         ) = data;
 
         let default_weapon = |character: &Entity| -> Box<dyn AttackDice> {
-            Box::new(Weapon {
+            let mut weapon = Weapon {
                 range: None,
                 attribute: WeaponAttribute::Might,
                 hit_bonus: 0,
@@ -183,7 +234,23 @@ impl<'a> System<'a> for GameMoveSystem {
                 damage_bonus: 0,
                 proc_chance: None,
                 proc_target: None,
-            })
+            };
+
+            if let Some(nat) = natural.get(*character) {
+                if !nat.attacks.is_empty() {
+                    let attack_index = if nat.attacks.len() == 1 {
+                        0
+                    } else {
+                        crate::rng::roll_dice(1, nat.attacks.len() as i32) as usize - 1
+                    };
+                    weapon.hit_bonus = nat.attacks[attack_index].hit_bonus;
+                    weapon.damage_n_dice = nat.attacks[attack_index].damage_n_dice;
+                    weapon.damage_die_type = nat.attacks[attack_index].damage_die_type;
+                    weapon.damage_bonus = nat.attacks[attack_index].damage_bonus;
+                }
+            }
+
+            Box::new(weapon)
         };
 
         let find_weapon = |character: &Entity, slot: EquipmentSlot| -> Box<dyn AttackDice> {
@@ -199,32 +266,45 @@ impl<'a> System<'a> for GameMoveSystem {
             }
         };
 
-        let find_combat_character = |entity: Entity, slot: EquipmentSlot| -> Character {
-            Character {
-                entity: entity,
-                name: names.get(entity),
-                attributes: attributes.get(entity),
-                skills: skills.get(entity),
-                pools: pools.get(entity),
-                weapon: find_weapon(&entity, slot),
+        let new_character = |entity: Entity, slot: EquipmentSlot| -> Option<Character> {
+            if let Some(pool) = pools.get(entity) {
+                if pool.hit_points.current > 0 {
+                    return Some(Character {
+                        entity,
+                        name: match names.get(entity) {
+                            Some(name) => name.clone().name,
+                            None => "Unknown".to_string(),
+                        },
+                        attributes: match attributes.get(entity) {
+                            Some(attributes) => attributes.clone(),
+                            None => panic!(format!("no attributes for {:?}", entity)),
+                        },
+                        skills: skills.get(entity),
+                        pools: pool,
+                        weapon: find_weapon(&entity, slot),
+                    });
+                }
             }
+            None
         };
 
-        for (entity, gamemove, pc_name, pc_attributes, pc_skills, pc_pools) in
-            (&entities, &wants_move, &names, &attributes, &skills, &pools).join()
-        {
+        for (entity, gamemove) in (&entities, &wants_move).join() {
             match gamemove.kind {
                 GameMove::Defend => {
-                    let pc = find_combat_character(entity, EquipmentSlot::Melee);
-                    let npc = find_combat_character(gamemove.npc, EquipmentSlot::Melee);
-                    defend(gamemove, pc, npc);
+                    if let Some(pc) = new_character(entity, EquipmentSlot::Melee) {
+                        if let Some(npc) = new_character(gamemove.npc, EquipmentSlot::Melee) {
+                            defend(gamemove, pc, npc);
+                        }
+                    }
                 }
                 GameMove::DefyDanger => {}
                 GameMove::DiscernReality => {}
                 GameMove::HackAndSlash => {
-                    let pc = find_combat_character(entity, EquipmentSlot::Melee);
-                    let npc = find_combat_character(gamemove.npc, EquipmentSlot::Melee);
-                    hack_and_slash(gamemove, pc, npc);
+                    if let Some(pc) = new_character(entity, EquipmentSlot::Melee) {
+                        if let Some(npc) = new_character(gamemove.npc, EquipmentSlot::Melee) {
+                            hack_and_slash(gamemove, pc, npc);
+                        }
+                    }
                 }
                 GameMove::LastBreath => {}
                 GameMove::MakeCamp => {}
@@ -232,7 +312,13 @@ impl<'a> System<'a> for GameMoveSystem {
                 GameMove::SpoutLore => {}
                 GameMove::Supply => {}
                 GameMove::UndertakePerilousJourney => {}
-                GameMove::Volly => {}
+                GameMove::Volly => {
+                    if let Some(pc) = new_character(entity, EquipmentSlot::Melee) {
+                        if let Some(npc) = new_character(gamemove.npc, EquipmentSlot::Melee) {
+                            volly(gamemove, pc, npc);
+                        }
+                    }
+                }
                 _ => {}
             }
         }
