@@ -653,7 +653,6 @@ fn main() -> rltk::BError {
     gs.ecs.register::<WantsToGameMove>();
     gs.ecs.register::<WantsToPickupItem>();
     gs.ecs.register::<WantsToRemoveItem>();
-    gs.ecs.register::<WantsToShoot>();
     gs.ecs.register::<WantsToUseItem>();
     gs.ecs.register::<Weapon>();
     gs.ecs.register::<Wearable>();

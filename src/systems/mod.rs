@@ -12,8 +12,6 @@ mod movement_system;
 use movement_system::MovementSystem;
 mod trigger_system;
 use trigger_system::TriggerSystem;
-mod ranged_combat_system;
-use ranged_combat_system::RangedCombatSystem;
 mod gamemove_system;
 use gamemove_system::GameMoveSystem;
 mod inventory_system;

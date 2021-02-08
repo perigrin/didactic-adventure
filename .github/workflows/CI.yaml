@@ -42,7 +42,7 @@ jobs:
         with:
           use-cross: true
           command: clippy
-          args: --target ${{ matrix.arch }} -- -D warnings
+          args: --target ${{ matrix.arch }} #-- -D warnings
 
   windows:
     name: Windows
@@ -82,7 +82,7 @@ jobs:
         with:
           use-cross: true
           command: clippy
-          args: --target ${{ matrix.arch }} -- -D warnings
+          args: --target ${{ matrix.arch }} #-- -D warnings
 
   macos:
     name: macOS
@@ -121,5 +121,5 @@ jobs:
         with:
           use-cross: true
           command: clippy
-          args: --target ${{ matrix.arch }} -- -D warnings
+          args: --target ${{ matrix.arch }} #-- -D warnings
 

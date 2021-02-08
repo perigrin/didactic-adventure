@@ -220,7 +220,7 @@ impl<'a> System<'a> for GameMoveSystem {
             pools,
             equipped_items,
             weapon,
-            wearables,
+            _wearables,
             natural,
         ) = data;
 
@@ -319,7 +319,6 @@ impl<'a> System<'a> for GameMoveSystem {
                         }
                     }
                 }
-                _ => {}
             }
         }
     }

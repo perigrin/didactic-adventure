@@ -62,7 +62,7 @@ pub fn npc_hp(con: i32, level: i32) -> i32 {
     hp
 }
 
-pub fn mana_at_level(intelligence: i32, level: i32) -> i32 {
+pub fn mana_at_level(_intelligence: i32, level: i32) -> i32 {
     4 * level
 }
 
