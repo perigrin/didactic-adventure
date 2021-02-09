@@ -6,17 +6,17 @@ use crate::{
 use rltk::prelude::*;
 use specs::prelude::*;
 
-fn draw_attribute(name: &str, attribute: &Attribute, y: i32, draw_batch: &mut DrawBatch) {
+fn draw_attribute(name: &str, attribute: &Attribute, x: i32, y: i32, draw_batch: &mut DrawBatch) {
     let black = RGB::named(rltk::BLACK);
     let attr_gray: RGB = RGB::from_hex("#CCCCCC").expect("Oops");
-    draw_batch.print_color(Point::new(50, y), name, ColorPair::new(attr_gray, black));
+    draw_batch.print_color(Point::new(x, y), name, ColorPair::new(attr_gray, black));
     let color: RGB = if attribute.base < 1 {
         RGB::from_f32(1.0, 0.0, 0.0)
     } else {
         RGB::from_f32(0.0, 1.0, 0.0)
     };
     draw_batch.print_color(
-        Point::new(67, y),
+        Point::new(x + 5, y),
         &format!("{}", attribute.base),
         ColorPair::new(color, black),
     );
@@ -145,10 +145,12 @@ fn draw_stats(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
 fn draw_attributes(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
     let attributes = ecs.read_storage::<Attributes>();
     let attr = attributes.get(*player_entity).unwrap();
-    draw_attribute("Might:", &attr.might, 4, draw_batch);
-    draw_attribute("Quickness:", &attr.quickness, 5, draw_batch);
-    draw_attribute("Fitness:", &attr.fitness, 6, draw_batch);
-    draw_attribute("Intelligence:", &attr.intelligence, 7, draw_batch);
+    draw_attribute("STR:", &attr.str, 50, 4, draw_batch);
+    draw_attribute("DEX:", &attr.dex, 50, 5, draw_batch);
+    draw_attribute("CON:", &attr.con, 50, 6, draw_batch);
+    draw_attribute("INT:", &attr.int, 60, 4, draw_batch);
+    draw_attribute("WIS:", &attr.wis, 60, 5, draw_batch);
+    draw_attribute("CHA:", &attr.cha, 60, 6, draw_batch);
 }
 
 fn initiative_weight(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {

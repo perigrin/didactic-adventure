@@ -46,7 +46,7 @@ pub struct Weapon {
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct Wearable {
-    pub armor_class: f32,
+    pub armor: i32,
     pub slot: String,
 }
 

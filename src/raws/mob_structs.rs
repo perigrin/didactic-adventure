@@ -42,7 +42,7 @@ pub struct MobAttributes {
 
 #[derive(Deserialize, Debug)]
 pub struct MobNatural {
-    pub armor_class: Option<i32>,
+    pub armor: Option<i32>,
     pub attacks: Option<Vec<NaturalAttack>>,
 }
 

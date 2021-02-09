@@ -42,7 +42,8 @@ struct Character<'a> {
     attributes: Attributes,
     //skills: Option<&'a Skills>,
     pools: &'a Pools,
-    weapon: Box<dyn AttackDice>,
+    weapon: Weapon,
+    armor: i32,
 }
 
 impl<'a> Character<'a> {
@@ -56,19 +57,17 @@ impl<'a> Character<'a> {
     fn deal_damage(&self, to: &Character, modifier: f32, logger: Logger) {
         let weapon = &self.weapon;
         let damage = weapon.damage();
-
         rltk::console::log(format!(
-            "So {}({:?}) is dealing damage {} to {}({:?})",
+            "So {}({:?}) dealing raw damage {} to {}({:?})",
             self.name, self.entity, damage, to.name, to.entity
         ));
 
-        add_effect(
-            Some(self.entity),
-            EffectType::Damage {
-                amount: ((damage as f32) * modifier) as i32,
-            },
-            Targets::Single { target: to.entity },
-        );
+        let damage = damage - to.armor;
+
+        rltk::console::log(format!(
+            "So {}({:?}) is dealing adjusted damage {} to {}({:?})",
+            self.name, self.entity, damage, to.name, to.entity
+        ));
 
         logger
             .npc_name(&self.name)
@@ -78,6 +77,14 @@ impl<'a> Character<'a> {
             .damage(damage)
             .append("hp.")
             .log();
+
+        add_effect(
+            Some(self.entity),
+            EffectType::Damage {
+                amount: ((damage as f32) * modifier) as i32,
+            },
+            Targets::Single { target: to.entity },
+        );
     }
 }
 
@@ -92,7 +99,7 @@ fn defend(pc: Character, npc: Character) {
     };
 
     // roll+CON
-    match crate::roll_plus_stat(pc.attributes.con) {
+    match crate::roll_plus_stat(i32::from(pc.attributes.con)) {
         Success::Critical => {
             let log = Logger::new()
                 .npc_name(&pc.name)
@@ -114,7 +121,7 @@ fn defend(pc: Character, npc: Character) {
             // PC "mostly" avoids NPC, takes half damage
             let log = Logger::new()
                 .npc_name(&pc.name)
-                .append("almost dodges")
+                .append("partly dodges")
                 .npc_name(&npc.name)
                 .append("and");
 
@@ -124,6 +131,7 @@ fn defend(pc: Character, npc: Character) {
     }
 }
 
+// TODO figure out how to apply hit_bonus
 fn hack_and_slash(pc: Character, npc: Character) {
     rltk::console::log(format!(
         "{}({:?}) hack_and_slash vs {}({:?})",
@@ -133,7 +141,7 @@ fn hack_and_slash(pc: Character, npc: Character) {
         return; // can't hack and slash if you're dead
     }
 
-    let success = crate::roll_plus_stat(pc.attributes.str); // roll+STR
+    let success = crate::roll_plus_stat(i32::from(pc.attributes.str) + pc.weapon.hit_bonus); // roll+STR
     match success {
         Success::Critical => pc.deal_damage(&npc, 2.0, Logger::new()), // PC hits NPC for 2x
         Success::Full => pc.deal_damage(&npc, 1.0, Logger::new()), // PC hits NPC for regular damage
@@ -144,15 +152,12 @@ fn hack_and_slash(pc: Character, npc: Character) {
             let log = Logger::new()
                 .append("But")
                 .npc_name(&npc.name)
-                .append("manages a return strike; ");
+                .append("manages a return strike:");
             npc.deal_damage(&pc, 1.0, log);
         }
         Success::Miss => {
             // PC misses entirely and NPC gets a hit
-            let log = Logger::new()
-                .npc_name(&pc.name)
-                .append("misses entirely and");
-
+            let log = Logger::new().npc_name(&pc.name).append("misses entirely.");
             npc.deal_damage(&pc, 1.0, log);
         }
     }
@@ -168,7 +173,7 @@ fn volly(pc: Character, npc: Character) {
         return; // can't hack and slash if you're dead
     }
 
-    let success = crate::roll_plus_stat(pc.attributes.dex); // roll+DEX
+    let success = crate::roll_plus_stat(i32::from(pc.attributes.dex) + pc.weapon.hit_bonus); // roll+DEX
     match success {
         Success::Critical => pc.deal_damage(&npc, 2.0, Logger::new()), // PC hits NPC for 2x
         Success::Full => pc.deal_damage(&npc, 1.0, Logger::new()), // PC hits NPC for regular damage
@@ -220,11 +225,11 @@ impl<'a> System<'a> for GameMoveSystem {
             pools,
             equipped_items,
             weapon,
-            _wearables,
+            wearables,
             natural,
         ) = data;
 
-        let default_weapon = |character: &Entity| -> Box<dyn AttackDice> {
+        let default_weapon = |character: &Entity| -> Weapon {
             let mut weapon = Weapon {
                 range: None,
                 attribute: WeaponAttribute::Might,
@@ -249,11 +254,10 @@ impl<'a> System<'a> for GameMoveSystem {
                     weapon.damage_bonus = nat.attacks[attack_index].damage_bonus;
                 }
             }
-
-            Box::new(weapon)
+            weapon
         };
 
-        let find_weapon = |character: &Entity, slot: EquipmentSlot| -> Box<dyn AttackDice> {
+        let find_weapon = |character: &Entity, slot: EquipmentSlot| -> Weapon {
             let mut found: Option<Weapon> = None;
             for (_e, wielded, melee) in (&entities, &equipped_items, &weapon).join() {
                 if wielded.owner == *character && wielded.slot == slot {
@@ -261,8 +265,21 @@ impl<'a> System<'a> for GameMoveSystem {
                 }
             }
             match found {
+                Some(found) => found,
                 None => default_weapon(character),
-                Some(found) => Box::new(found),
+            }
+        };
+
+        let find_armor = |character: &Entity| -> i32 {
+            let mut found: Option<Wearable> = None;
+            for (wielded, armor) in (&equipped_items, &wearables).join() {
+                if wielded.owner == *character && wielded.slot == EquipmentSlot::Armor {
+                    found = Some(armor.clone());
+                }
+            }
+            match found {
+                Some(item) => item.armor,
+                None => 0,
             }
         };
 
@@ -282,6 +299,7 @@ impl<'a> System<'a> for GameMoveSystem {
                         //skills: skills.get(entity),
                         pools: pool,
                         weapon: find_weapon(&entity, slot),
+                        armor: find_armor(&entity),
                     });
                 }
             }

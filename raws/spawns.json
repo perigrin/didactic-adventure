@@ -278,7 +278,7 @@
             "order" : 2
         },
         "consumable" : {
-            "effects" : { 
+            "effects" : {
                 "ranged" : "6",
                 "damage" : "20",
                 "particle_line" : "▓;#00FFFF;200.0"
@@ -299,7 +299,7 @@
             "order" : 2
         },
         "consumable" : {
-            "effects" : { 
+            "effects" : {
                 "ranged" : "6",
                 "slow" : "10.0",
                 "area_of_effect" : "3",
@@ -321,7 +321,7 @@
             "order" : 2
         },
         "consumable" : {
-            "effects" : { 
+            "effects" : {
                 "ranged" : "6",
                 "damage" : "20",
                 "area_of_effect" : "3",
@@ -343,7 +343,7 @@
             "order" : 2
         },
         "consumable" : {
-            "effects" : { 
+            "effects" : {
                 "ranged" : "6",
                 "confusion" : "4"
             }
@@ -439,7 +439,7 @@
             "order" : 2
         },
         "consumable" : {
-            "effects" : { 
+            "effects" : {
                 "food" : ""
             }
         },
@@ -457,7 +457,7 @@
             "order" : 2
         },
         "consumable" : {
-            "effects" : { 
+            "effects" : {
                 "food" : ""
             }
         },
@@ -499,7 +499,7 @@
             "order" : 2
         },
         "consumable" : {
-            "effects" : { 
+            "effects" : {
                 "food" : ""
             }
         },
@@ -534,7 +534,7 @@
         "weapon" : {
             "range" : "melee",
             "attribute" : "might",
-            "base_damage" : "1d8-1",
+            "base_damage" : "1d6",
             "hit_bonus" : -1
         },
         "weight_lbs" : 3.0,
@@ -554,7 +554,7 @@
         "weapon" : {
             "range" : "melee",
             "attribute" : "Quickness",
-            "base_damage" : "1d4",
+            "base_damage" : "1d6",
             "hit_bonus" : 0
         },
         "weight_lbs" : 1.0,
@@ -580,7 +580,7 @@
         "weapon" : {
             "range" : "4",
             "attribute" : "Quickness",
-            "base_damage" : "1d4",
+            "base_damage" : "1d6",
             "hit_bonus" : 0
         },
         "weight_lbs" : 2.0,
@@ -606,7 +606,7 @@
         "weapon" : {
             "range" : "6",
             "attribute" : "Quickness",
-            "base_damage" : "1d6",
+            "base_damage" : "1d6+1",
             "hit_bonus" : 0
         },
         "weight_lbs" : 2.0,
@@ -658,7 +658,7 @@
         "weapon" : {
             "range" : "melee",
             "attribute" : "might",
-            "base_damage" : "1d8",
+            "base_damage" : "1d6+1",
             "hit_bonus" : 0
         },
         "weight_lbs" : 3.0,
@@ -684,7 +684,7 @@
         "weapon" : {
             "range" : "melee",
             "attribute" : "might",
-            "base_damage" : "1d6+2",
+            "base_damage" : "1d6+1",
             "hit_bonus" : 1
         },
         "weight_lbs" : 2.5,
@@ -710,7 +710,7 @@
         "weapon" : {
             "range" : "melee",
             "attribute" : "might",
-            "base_damage" : "1d8",
+            "base_damage" : "1d6+2",
             "hit_bonus" : 0
         },
         "weight_lbs" : 4.0,
@@ -736,8 +736,8 @@
         "weapon" : {
             "range" : "melee",
             "attribute" : "might",
-            "base_damage" : "1d12",
-            "hit_bonus" : 0
+            "base_damage" : "1d6+2",
+            "hit_bonus" : 1
         },
         "weight_lbs" : 4.0,
         "base_value" : 100.0,
@@ -761,7 +761,7 @@
         },
         "wearable" : {
             "slot" : "Shield",
-            "armor_class" : 1.0
+            "armor" : 1
         },
         "weight_lbs" : 5.0,
         "base_value" : 3.0,
@@ -785,7 +785,7 @@
         },
         "wearable" : {
             "slot" : "Shield",
-            "armor_class" : 2.0
+            "armor" : 2
         },
         "weight_lbs" : 45.0,
         "base_value" : 30.0,
@@ -808,8 +808,8 @@
             "order" : 2
         },
         "wearable" : {
-            "slot" : "Torso",
-            "armor_class" : 0.1
+            "slot" : "Armor",
+            "armor" : 0
         },
         "weight_lbs" : 1.0,
         "base_value" : 1.0,
@@ -827,7 +827,7 @@
         },
         "wearable" : {
             "slot" : "Legs",
-            "armor_class" : 0.1
+            "armor" : 0
         },
         "weight_lbs" : 1.0,
         "base_value" : 1.0,
@@ -845,7 +845,7 @@
         },
         "wearable" : {
             "slot" : "Feet",
-            "armor_class" : 0.1
+            "armor" : 0
         },
         "weight_lbs" : 1.0,
         "base_value" : 1.0,
@@ -888,8 +888,8 @@
             "order" : 2
         },
         "wearable" : {
-            "slot" : "Torso",
-            "armor_class" : 0.1
+            "slot" : "Armor",
+            "armor" : 0
         },
         "weight_lbs" : 1.0,
         "base_value" : 1.0,
@@ -907,7 +907,7 @@
         },
         "wearable" : {
             "slot" : "Legs",
-            "armor_class" : 0.1
+            "armor" : 0
         },
         "weight_lbs" : 1.0,
         "base_value" : 1.0,
@@ -925,7 +925,7 @@
         },
         "wearable" : {
             "slot" : "Legs",
-            "armor_class" : 0.2
+            "armor" : 0
         },
         "weight_lbs" : 5.0,
         "base_value" : 25.0,
@@ -949,7 +949,7 @@
         },
         "wearable" : {
             "slot" : "Legs",
-            "armor_class" : 0.3
+            "armor" : 0
         },
         "weight_lbs" : 10.0,
         "base_value" : 50.0,
@@ -973,7 +973,7 @@
         },
         "wearable" : {
             "slot" : "Legs",
-            "armor_class" : 0.4
+            "armor" : 0
         },
         "weight_lbs" : 10.0,
         "base_value" : 50.0,
@@ -997,7 +997,7 @@
         },
         "wearable" : {
             "slot" : "Legs",
-            "armor_class" : 0.5
+            "armor" : 0
         },
         "weight_lbs" : 20.0,
         "base_value" : 100.0,
@@ -1021,7 +1021,7 @@
         },
         "wearable" : {
             "slot" : "Feet",
-            "armor_class" : 0.1
+            "armor" : 0
         },
         "weight_lbs" : 1.0,
         "base_value" : 1.0,
@@ -1038,8 +1038,8 @@
             "order" : 2
         },
         "wearable" : {
-            "slot" : "Torso",
-            "armor_class" : 1.0
+            "slot" : "Armor",
+            "armor" : 1
         },
         "weight_lbs" : 15.0,
         "base_value" : 10.0,
@@ -1062,8 +1062,8 @@
             "order" : 2
         },
         "wearable" : {
-            "slot" : "Torso",
-            "armor_class" : 2.0
+            "slot" : "Armor",
+            "armor" : 2
         },
         "weight_lbs" : 20.0,
         "base_value" : 50.0,
@@ -1086,8 +1086,8 @@
             "order" : 2
         },
         "wearable" : {
-            "slot" : "Torso",
-            "armor_class" : 3.0
+            "slot" : "Armor",
+            "armor" : 3
         },
         "weight_lbs" : 5.0,
         "base_value" : 50.0,
@@ -1110,8 +1110,8 @@
             "order" : 2
         },
         "wearable" : {
-            "slot" : "Torso",
-            "armor_class" : 3.0
+            "slot" : "Armor",
+            "armor" : 2
         },
         "weight_lbs" : 25.0,
         "base_value" : 100.0,
@@ -1134,8 +1134,8 @@
             "order" : 2
         },
         "wearable" : {
-            "slot" : "Torso",
-            "armor_class" : 3.0
+            "slot" : "Armor",
+            "armor" : 3
         },
         "weight_lbs" : 5.0,
         "base_value" : 500.0,
@@ -1159,7 +1159,7 @@
         },
         "wearable" : {
             "slot" : "Head",
-            "armor_class" : 0.2
+            "armor" : 0
         },
         "weight_lbs" : 0.25,
         "base_value" : 5.0,
@@ -1177,7 +1177,7 @@
         },
         "wearable" : {
             "slot" : "Head",
-            "armor_class" : 0.4
+            "armor" : 0
         },
         "weight_lbs" : 0.5,
         "base_value" : 10.0,
@@ -1201,7 +1201,7 @@
         },
         "wearable" : {
             "slot" : "Head",
-            "armor_class" : 1.0
+            "armor" : 0
         },
         "weight_lbs" : 5.0,
         "base_value" : 20.0,
@@ -1225,7 +1225,7 @@
         },
         "wearable" : {
             "slot" : "Head",
-            "armor_class" : 2.0
+            "armor" : 0
         },
         "weight_lbs" : 15.0,
         "base_value" : 100.0,
@@ -1249,7 +1249,7 @@
         },
         "wearable" : {
             "slot" : "Feet",
-            "armor_class" : 0.2
+            "armor" : 0
         },
         "weight_lbs" : 2.0,
         "base_value" : 5.0,
@@ -1273,7 +1273,7 @@
         },
         "wearable" : {
             "slot" : "Feet",
-            "armor_class" : 0.3
+            "armor" : 0
         },
         "weight_lbs" : 3.0,
         "base_value" : 10.0,
@@ -1297,7 +1297,7 @@
         },
         "wearable" : {
             "slot" : "Feet",
-            "armor_class" : 0.4
+            "armor" : 0
         },
         "weight_lbs" : 2.0,
         "base_value" : 10.0,
@@ -1321,7 +1321,7 @@
         },
         "wearable" : {
             "slot" : "Feet",
-            "armor_class" : 0.5
+            "armor" : 0
         },
         "weight_lbs" : 5.0,
         "base_value" : 10.0,
@@ -1345,7 +1345,7 @@
         },
         "wearable" : {
             "slot" : "Hands",
-            "armor_class" : 0.1
+            "armor" : 0
         },
         "weight_lbs" : 0.5,
         "base_value" : 1.0,
@@ -1363,7 +1363,7 @@
         },
         "wearable" : {
             "slot" : "Hands",
-            "armor_class" : 0.2
+            "armor" : 0
         },
         "weight_lbs" : 1.0,
         "base_value" : 1.0,
@@ -1387,7 +1387,7 @@
         },
         "wearable" : {
             "slot" : "Hands",
-            "armor_class" : 0.3
+            "armor" : 0
         },
         "weight_lbs" : 2.0,
         "base_value" : 10.0,
@@ -1411,7 +1411,7 @@
         },
         "wearable" : {
             "slot" : "Hands",
-            "armor_class" : 0.5
+            "armor" : 0
         },
         "weight_lbs" : 5.0,
         "base_value" : 10.0,
@@ -1435,7 +1435,7 @@
         },
         "wearable" : {
             "slot" : "Hands",
-            "armor_class" : 0.1
+            "armor" : 0
         },
         "weight_lbs" : 1.0,
         "base_value" : 300.0,
@@ -1454,7 +1454,7 @@
             "order" : 2
         },
         "consumable" : {
-            "effects" : { 
+            "effects" : {
                 "ranged" : "6",
                 "damage" : "20",
                 "area_of_effect" : "3",
@@ -1477,7 +1477,7 @@
             "order" : 2
         },
         "consumable" : {
-            "effects" : { 
+            "effects" : {
                 "ranged" : "6",
                 "damage_over_time" : "1",
                 "particle_line" : "▓;#00FF00;200.0"
@@ -1759,19 +1759,13 @@
         "blocks_tile" : true,
         "vision_range" : 8,
         "movement" : "static",
-        "attributes" : {
-            "might" : 7,
-            "fitness" : 3
-        },
-        "skills" : {
-            "Melee" : -1,
-            "Defense" : -1
-        },
+        "attributes" : { },
+        "skills" : { },
         "natural" : {
-            "armor_class" : 11,
+            "armor" : 0,
             "attacks" : [
                 { "name" : "bite", "hit_bonus" : 0, "damage" : "1d4" }
-            ]   
+            ]
         },
         "faction" : "Hungry Rodents"
     },
@@ -1787,19 +1781,16 @@
         "blocks_tile" : true,
         "vision_range" : 8,
         "movement" : "static",
-        "attributes" : {
-            "might" : 3,
-            "fitness" : 3
-        },
+        "attributes" : {},
         "skills" : {
             "Melee" : -1,
             "Defense" : -1
         },
         "natural" : {
-            "armor_class" : 12,
+            "armor" : 0,
             "attacks" : [
-                { "name" : "bite", "hit_bonus" : 0, "damage" : "1d6" }
-            ]   
+                { "name" : "bite", "hit_bonus" : 0, "damage" : "1d6-1" }
+            ]
         },
         "loot_table" : "Animal",
         "faction" : "Carnivores"
@@ -1816,19 +1807,13 @@
         "blocks_tile" : true,
         "vision_range" : 8,
         "movement" : "static",
-        "attributes" : {
-            "might" : 3,
-            "fitness" : 3
-        },
-        "skills" : {
-            "Melee" : -1,
-            "Defense" : -1
-        },
+        "attributes" : { },
+        "skills" : { },
         "natural" : {
-            "armor_class" : 11,
+            "armor" : 0,
             "attacks" : [
                 { "name" : "bite", "hit_bonus" : 0, "damage" : "1d4" }
-            ]   
+            ]
         },
         "loot_table" : "Animal",
         "faction" : "Carnivores"
@@ -1845,16 +1830,10 @@
         "blocks_tile" : true,
         "vision_range" : 8,
         "movement" : "random",
-        "attributes" : {
-            "might" : 3,
-            "fitness" : 3
-        },
-        "skills" : {
-            "Melee" : -1,
-            "Defense" : -1
-        },
+        "attributes" : { },
+        "skills" : { },
         "natural" : {
-            "armor_class" : 11,
+            "armor" : 0,
             "attacks" : [
                 { "name" : "bite", "hit_bonus" : 0, "damage" : "1d4" }
             ]
@@ -1876,7 +1855,7 @@
         "movement" : "random_waypoint",
         "quips" : [ "Stand and deliver!", "Alright, hand it over" ],
         "attributes" : {},
-        "equipped" : [ "Dagger", "Shield", "Leather Armor", "Leather Boots" ],
+        "equipped" : [ "Dagger", "Leather Armor", "Leather Boots" ],
         "light" : {
             "range" : 6,
             "color" : "#FFFF55"
@@ -1918,7 +1897,9 @@
         "blocks_tile" : true,
         "vision_range" : 8,
         "movement" : "random_waypoint",
-        "attributes" : {},
+        "attributes" : {
+            dex: 1
+        },
         "equipped" : [ "Hand Crossbow", "Scimitar", "Buckler", "Drow Chain", "Drow Leggings", "Drow Boots" ],
         "faction" : "DarkElf",
         "gold" : "3d6",
@@ -1936,7 +1917,9 @@
         "blocks_tile" : true,
         "vision_range" : 8,
         "movement" : "random_waypoint",
-        "attributes" : {},
+        "attributes" : {
+            dex: 1
+        },
         "equipped" : [ "Scimitar +1", "Buckler", "Drow Chain", "Drow Leggings", "Drow Boots" ],
         "faction" : "DarkElfA",
         "gold" : "3d6",
@@ -1954,7 +1937,10 @@
         "blocks_tile" : true,
         "vision_range" : 8,
         "movement" : "random_waypoint",
-        "attributes" : {},
+        "attributes" : {
+            dex: 1,
+            cha: 1,
+        },
         "equipped" : [ "Scimitar +2", "Buckler +1", "Drow Chain", "Drow Leggings", "Drow Boots" ],
         "faction" : "DarkElfA",
         "gold" : "3d6",
@@ -1972,7 +1958,9 @@
         "blocks_tile" : true,
         "vision_range" : 8,
         "movement" : "static",
-        "attributes" : {},
+        "attributes" : {
+            str: 2,
+        },
         "faction" : "DarkElfA",
         "gold" : "1d8"
     },
@@ -2065,9 +2053,9 @@
         "vision_range" : 6,
         "movement" : "static",
         "natural" : {
-            "armor_class" : 12,
+            "armor" : 0,
             "attacks" : [
-                { "name" : "bite", "hit_bonus" : 1, "damage" : "1d12" }
+                { "name" : "bite", "hit_bonus" : 1, "damage" : "1d6+1" }
             ]
         },
         "abilities" : [
@@ -2179,7 +2167,7 @@
             "Defense" : -1
         },
         "natural" : {
-            "armor_class" : 11,
+            "armor" : 0,
             "attacks" : [
                 { "name" : "bite", "hit_bonus" : 0, "damage" : "1d4" }
             ]
@@ -2201,7 +2189,7 @@
         "vision_range" : 6,
         "movement" : "static",
         "natural" : {
-            "armor_class" : 12,
+            "armor" : 0,
             "attacks" : [
                 { "name" : "bite", "hit_bonus" : 1, "damage" : "1d12" }
             ]
@@ -2215,7 +2203,9 @@
     {
         "name" : "Gelatinous Cube",
         "level" : 2,
-        "attributes" : {},
+        "attributes" : {
+            "dex": 1,
+        },
         "renderable": {
             "glyph" : "▄",
             "fg" : "#FF0000",
@@ -2226,10 +2216,10 @@
         "vision_range" : 4,
         "movement" : "static",
         "natural" : {
-            "armor_class" : 12,
+            "armor" : 0,
             "attacks" : [
                 { "name" : "engulf", "hit_bonus" : 0, "damage" : "1d8" }
-            ]   
+            ]
         },
         "light" : {
             "range" : 4,
@@ -2249,15 +2239,12 @@
         "vision_range" : 12,
         "movement" : "random_waypoint",
         "attributes" : {
-            "might" : 3,
-            "fitness" : 3
+            "str" : 3,
+            "con" : 3
         },
-        "skills" : {
-            "Melee" : 15,
-            "Defense" : 14
-        },
+        "skills" : {},
         "natural" : {
-            "armor_class" : 15,
+            "armor" : 3,
             "attacks" : [
                 { "name" : "bite", "hit_bonus" : 4, "damage" : "1d10+2" }
             ]
@@ -2290,7 +2277,7 @@
             "Defense" : 16
         },
         "natural" : {
-            "armor_class" : 17,
+            "armor" : 4,
             "attacks" : [
                 { "name" : "bite", "hit_bonus" : 4, "damage" : "1d10+2" },
                 { "name" : "left_claw", "hit_bonus" : 2, "damage" : "1d10" },
@@ -2470,7 +2457,7 @@
         "movement" : "random",
         "attributes" : {},
         "natural" : {
-            "armor_class" : 11,
+            "armor" : 2,
             "attacks" : [
                 { "name" : "bite", "hit_bonus" : 0, "damage" : "1d4" }
             ]

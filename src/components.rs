@@ -401,6 +401,7 @@ pub enum EquipmentSlot {
     Legs,
     Feet,
     Hands,
+    Armor,
 }
 
 #[derive(Component, Serialize, Deserialize, Clone)]
@@ -434,7 +435,7 @@ pub struct Weapon {
 
 #[derive(Component, Serialize, Deserialize, Clone)]
 pub struct Wearable {
-    pub armor_class: f32,
+    pub armor: i32,
     pub slot: EquipmentSlot,
 }
 
@@ -449,7 +450,7 @@ pub struct NaturalAttack {
 
 #[derive(Component, Serialize, Deserialize, Clone)]
 pub struct NaturalAttackDefense {
-    pub armor_class: Option<i32>,
+    pub armor: Option<i32>,
     pub attacks: Vec<NaturalAttack>,
 }
 

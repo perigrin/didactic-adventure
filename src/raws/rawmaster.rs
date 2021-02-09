@@ -140,7 +140,7 @@ impl RawMaster {
             }
         }
         if let Some(mut armor) = base_item_copy.wearable.as_mut() {
-            armor.armor_class += nmw.bonus as f32;
+            armor.armor += nmw.bonus as i32;
         }
         base_item_copy
     }
@@ -399,6 +399,7 @@ pub fn string_to_slot(slot: &str) -> EquipmentSlot {
         "Feet" => EquipmentSlot::Feet,
         "Hands" => EquipmentSlot::Hands,
         "Melee" => EquipmentSlot::Melee,
+        "Armor" => EquipmentSlot::Armor,
         _ => {
             rltk::console::log(format!("Warning: unknown equipment slot type [{}])", slot));
             EquipmentSlot::Melee
@@ -576,7 +577,7 @@ pub fn spawn_named_item(
             eb = eb.with(Equippable { slot });
             eb = eb.with(Wearable {
                 slot,
-                armor_class: wearable.armor_class,
+                armor: wearable.armor,
             });
         }
 
@@ -863,7 +864,7 @@ pub fn spawn_named_mob(
 
         if let Some(na) = &mob_template.natural {
             let mut nature = NaturalAttackDefense {
-                armor_class: na.armor_class,
+                armor: na.armor,
                 attacks: Vec::new(),
             };
             if let Some(attacks) = &na.attacks {

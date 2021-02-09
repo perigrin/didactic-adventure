@@ -19,17 +19,23 @@ pub fn roll_success(dice: DiceType) -> Success {
     }
 }
 
-pub fn roll_plus_stat(stat: Attribute) -> Success {
+impl From<Attribute> for i32 {
+    fn from(a: Attribute) -> i32 {
+        a.base + a.modifiers + a.bonus
+    }
+}
+
+pub fn roll_plus_stat(stat: i32) -> Success {
     roll_success(DiceType {
         n_dice: 2,
         die_type: 6,
-        bonus: stat.base,
+        bonus: stat,
     })
 }
 
 pub fn roll_stat() -> i32 {
     let roll = roll_success(DiceType {
-        n_dice: 1,
+        n_dice: 2,
         die_type: 6,
         bonus: 0,
     });

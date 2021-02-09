@@ -73,6 +73,7 @@ pub enum EffectType {
     DamageOverTime {
         damage: i32,
     },
+    // TODO GainXP should be it's own effect
 }
 
 #[derive(Clone, Debug)]
