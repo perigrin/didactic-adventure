@@ -63,7 +63,7 @@ jobs:
         with:
           use-cross: true
           command: clippy
-          args: --target ${{ matrix.arch }} -- -D warnings
+          args: --target ${{ matrix.arch }} #-- -D warnings
 
       - name: Upload Release Asset
         id: upload-release-asset
@@ -116,7 +116,7 @@ jobs:
         with:
           use-cross: true
           command: clippy
-          args: --target ${{ matrix.arch }} -- -D warnings
+          args: --target ${{ matrix.arch }} #-- -D warnings
 
       - name: Upload Release Asset
         id: upload-release-asset
@@ -168,7 +168,7 @@ jobs:
         with:
           use-cross: true
           command: clippy
-          args: --target ${{ matrix.arch }} -- -D warnings
+          args: --target ${{ matrix.arch }} #-- -D warnings
 
       - name: Upload Release Asset
         id: upload-release-asset
