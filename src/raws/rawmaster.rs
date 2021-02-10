@@ -830,31 +830,25 @@ pub fn spawn_named_mob(
         eb = eb.with(pools);
         eb = eb.with(EquipmentChanged {});
 
-        let mut skills = Skills {
-            skills: HashMap::new(),
-        };
-        skills.skills.insert(Skill::Melee, 1);
-        skills.skills.insert(Skill::Defense, 1);
-        skills.skills.insert(Skill::Magic, 1);
+        let mut skills = Vec::new();
+
         if let Some(mobskills) = &mob_template.skills {
             for sk in mobskills.iter() {
-                match sk.0.as_str() {
-                    "Melee" => {
-                        skills.skills.insert(Skill::Melee, *sk.1);
-                    }
-                    "Defense" => {
-                        skills.skills.insert(Skill::Defense, *sk.1);
-                    }
-                    "Magic" => {
-                        skills.skills.insert(Skill::Magic, *sk.1);
-                    }
-                    _ => {
-                        rltk::console::log(format!("Unknown skill referenced: [{}]", sk.0));
-                    }
+                match sk.as_str() {
+                    "Athletics" => skills.push(Skill::Athletics),
+                    "Awareness" => skills.push(Skill::Awareness),
+                    "Deception" => skills.push(Skill::Deception),
+                    "Decipher" => skills.push(Skill::Decipher),
+                    "Heal" => skills.push(Skill::Heal),
+                    "Leadership" => skills.push(Skill::Leadership),
+                    "Lore" => skills.push(Skill::Lore),
+                    "Stealth" => skills.push(Skill::Stealth),
+                    "Survival" => skills.push(Skill::Survival),
+                    _ => rltk::console::log(format!("Unknown skill referenced: [{}]", sk)),
                 }
             }
         }
-        eb = eb.with(skills);
+        eb = eb.with(Skills { skills });
 
         eb = eb.with(Viewshed {
             visible_tiles: Vec::new(),

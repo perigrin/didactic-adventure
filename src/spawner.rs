@@ -5,7 +5,7 @@ use super::{
     Rect, Renderable, SerializeMe, SingleActivation, Skill, Skills, StatusEffect, TeleportTo,
     TileType, Viewshed,
 };
-use crate::{mana_at_level, player_hp_at_level, roll_stat};
+use crate::{mana_at_level, player_hp_at_level, random_skill, roll_stat};
 use rltk::RGB;
 use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
@@ -15,12 +15,9 @@ use std::collections::HashMap;
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
     spawn_all_spells(ecs);
 
-    let mut skills = Skills {
-        skills: HashMap::new(),
+    let skills = Skills {
+        skills: (0..1).map(|_| -> Skill { random_skill() }).collect(),
     };
-    skills.skills.insert(Skill::Melee, 1);
-    skills.skills.insert(Skill::Defense, 1);
-    skills.skills.insert(Skill::Magic, 1);
 
     let player = ecs
         .create_entity()

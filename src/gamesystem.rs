@@ -1,4 +1,4 @@
-use super::{Attribute, Skill, Skills};
+use super::{Attribute, Skill};
 use itertools::Itertools;
 use rltk::prelude::DiceType;
 
@@ -72,10 +72,18 @@ pub fn mana_at_level(_intelligence: i32, level: i32) -> i32 {
     4 * level
 }
 
-pub fn skill_bonus(skill: Skill, skills: &Skills) -> i32 {
-    if skills.skills.contains_key(&skill) {
-        skills.skills[&skill]
-    } else {
-        -4
+pub fn random_skill() -> Skill {
+    let roll = crate::rng::roll_dice(1, 9);
+    match roll {
+        1 => Skill::Athletics,
+        2 => Skill::Awareness,
+        3 => Skill::Deception,
+        4 => Skill::Decipher,
+        5 => Skill::Heal,
+        6 => Skill::Leadership,
+        7 => Skill::Lore,
+        8 => Skill::Stealth,
+        9 => Skill::Survival,
+        _ => random_skill(),
     }
 }

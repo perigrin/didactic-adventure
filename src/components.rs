@@ -200,14 +200,20 @@ pub struct Attributes {
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]
 pub enum Skill {
-    Melee,
-    Defense,
-    Magic,
+    Athletics,
+    Awareness,
+    Deception,
+    Decipher,
+    Heal,
+    Leadership,
+    Lore,
+    Stealth,
+    Survival,
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Skills {
-    pub skills: HashMap<Skill, i32>,
+    pub skills: Vec<Skill>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]

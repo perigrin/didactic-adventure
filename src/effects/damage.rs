@@ -1,11 +1,11 @@
 use super::*;
 use crate::components::{
     Attributes, Confusion, DamageOverTime, Duration, EquipmentChanged, Name, Player, Pools,
-    SerializeMe, Skills, Slow, StatusEffect,
+    SerializeMe, Slow, StatusEffect,
 };
 use crate::gamesystem::{mana_at_level, player_hp_at_level};
 use crate::map::Map;
-use specs::prelude::*;
+//use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
 
 pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
@@ -124,12 +124,10 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
                         }
                     }
 
-                    // Improve all skills
-                    let mut skills = ecs.write_storage::<Skills>();
-                    let player_skills = skills.get_mut(*ecs.fetch::<Entity>()).unwrap();
-                    for sk in player_skills.skills.iter_mut() {
-                        *sk.1 += 1;
-                    }
+                    // TODO add a random skill when we level up
+                    // let mut skills = ecs.write_storage::<Skills>();
+                    // let player_skills = skills.get_mut(*ecs.fetch::<Entity>()).unwrap();
+                    // player_skills.skills.push(random_skill());
 
                     ecs.write_storage::<EquipmentChanged>()
                         .insert(*ecs.fetch::<Entity>(), EquipmentChanged {})
