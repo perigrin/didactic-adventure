@@ -62,7 +62,7 @@ impl<'a> Character<'a> {
             self.name, self.entity, damage, to.name, to.entity
         ));
 
-        let damage = damage - to.armor;
+        let damage = i32::max(0, damage - to.armor);
 
         rltk::console::log(format!(
             "So {}({:?}) is dealing adjusted damage {} to {}({:?})",
