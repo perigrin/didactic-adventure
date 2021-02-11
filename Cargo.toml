@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 itertools = "0.9.0"
-rltk = { version = "0.8.0", features = ["serde"] }
+rltk = { git = "https://github.com/thebracket/bracket-lib.git", features = ["serde"] }
 specs = { version = "0.16.1", features = ["serde"] }
 specs-derive = "0.4.1"
 serde= { version = "^1.0.44", features = ["derive"] }

@@ -140,6 +140,7 @@ jobs:
           - stable
         arch:
           - x86_64-apple-darwin
+          - aarch64-apple-darwin
     steps:
       - uses: actions/checkout@master
       - uses: actions-rs/toolchain@v1
